@@ -1,6 +1,6 @@
 :root {
     /* bg color */
-    --background-color: var(--color-ps-grey-50);
+    --background-color: var(--color-ps-grey-100);
 
     /* main light theme */
     --color-primary: var(--color-ps-blue);

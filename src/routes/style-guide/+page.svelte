@@ -24,3 +24,5 @@
         <Button label="Warning Large" size="lg" type="warning"></Button>
     </div>
 </div>
+
+<Button size="circ" label="hi"></Button>
