@@ -5,6 +5,7 @@
 /* variables */
 @import './variables/type.css';
 @import './variables/colors.css';
+@import './variables/spacing.css';
 
 /* themes */
 @import './themes/light.css';
