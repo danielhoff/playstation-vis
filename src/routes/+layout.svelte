@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.css';
+	import '../styles/app.css';
 	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
@@ -9,6 +9,6 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<h1>This appears on all pages</h1>
+<h1 class="font-space-mono text-ps-blue">This appears on all pages</h1>
 
 {@render children?.()}
