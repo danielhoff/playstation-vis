@@ -4,4 +4,9 @@
   --space-md: 1rem;
   --space-lg: 2rem;
   --space-xl: 4rem;
+
+  --btn-circ: 1rem;
+  --btn-sm: 0.5rem 1rem;
+  --btn-md: 0.75rem 1.5rem;
+  --btn-lg: 1rem 2.5rem;
 }

@@ -1,3 +1,7 @@
 @theme {
     --font-space-mono: "Space Mono", sans-mono;
+
+    --btn-text-sm: 0.9rem;
+    --btn-text-md: 1rem;
+    --btn-text-lg: 1.1rem;
 }

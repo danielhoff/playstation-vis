@@ -7,7 +7,12 @@
 @import './variables/colors.css';
 @import './variables/spacing.css';
 
+
+ /* global styles */
+@import './themes/global.css';
+
 /* themes */
 @import './themes/light.css';
 @import './themes/dark.css';
+
 

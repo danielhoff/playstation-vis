@@ -1,3 +1,26 @@
 :root {
-    --background-color: var(--color-ps-grey-50)
+    /* bg color */
+    --background-color: var(--color-ps-grey-50);
+
+    /* main light theme */
+    --color-primary: var(--color-ps-blue);
+    --color-primary-hover: var(--color-ps-blue-200);
+
+    --color-secondary: var(--color-ps-green);
+    --color-secondary-hover: var(--color-ps-green-300);
+
+    --color-warning: var(--color-ps-orange);
+    --color-warning-hover: var(--color-ps-orange-300);
+
+    /* on dark background */
+    --font-color-light: var(--color-ps-grey-200);
+    --font-color-light-hover: var(--color-ps-grey-600);
+
+    /* on light background */
+    --font-color-dark: var(--color-ps-grey-600);
+    --font-color-dark-hover: var(--color-ps-grey-800);
+
+    
+
+
 }
