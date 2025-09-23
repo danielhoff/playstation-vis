@@ -10,7 +10,7 @@
 </svelte:head>
 
 <!-- Dark class goes here :) -->
-<div class="">
-	<h1 class="font-space-mono text-ps-blue">This appears on all pages</h1>
+<div class="bg-(--background-color)">
+	<h1 class="font-space-mono text-ps-blue-700">This appears on all pages</h1>
 	{@render children?.()}
 </div>
