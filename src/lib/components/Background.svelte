@@ -1,6 +1,14 @@
 <script lang="ts">
     import { randomInt } from "$lib/utils/randomNumber";
 
+    interface Props {
+        theme: 'light' | 'dark';
+    }
+
+    let {
+        theme = 'light',
+    }: Props = $props();
+
     type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
 
     const symbols: {
@@ -30,7 +38,7 @@
 
 </script>
 
-<div class="h-dvh w-dvw absolute z-[-1] bg-(--background-color)">
+<div class="{theme} h-dvh w-dvw absolute z-[-1] bg-(--background-color)">
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img" aria-labelledby="title desc">
         <defs>
             <polygon id="triangle" points="32,8 56,48 8,48" fill="none" opacity="1" stroke="oklch(88.474% 0.00883 264.52)" stroke-width="4" stroke-linejoin="round">

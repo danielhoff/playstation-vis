@@ -19,9 +19,9 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<Background></Background>
+<Background theme={theme}></Background>
 
-<!-- Dark class goes here :) -->
+<!-- class for light/dark modes goes here -->
 <div class="{theme} p-(--space-lg) h-dvh w-dvw">
 	<div class="flex flex-row-reverse">
 		<ThemeToggle onClick={() => toggleTheme()} theme={theme}></ThemeToggle>

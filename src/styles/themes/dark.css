@@ -1,3 +1,6 @@
 .dark {
     --background-color: var(--color-ps-grey-700);
+
+     --color-primary: var(--color-ps-green);
+    --color-primary-hover: var(--color-ps-green-200);
 }
