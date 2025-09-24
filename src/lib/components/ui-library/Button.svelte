@@ -3,8 +3,8 @@
     interface Props {
         label?: string;
         type?: 'primary' | 'secondary' | 'warning';
-        size?: 'circ' | 'sm' | 'md' | 'lg';
-        icon?: '';
+        size?: 'sm' | 'md' | 'lg';
+        icon?: string;
         onClick?: (event: MouseEvent) => void;
     }
 
@@ -12,7 +12,6 @@
         label = '',
         type = 'primary',
         size = 'md',
-        icon = '',
         onClick
     }: Props = $props();
 
@@ -22,14 +21,12 @@
         sm: 'p-(--btn-sm) text-(--btn-text-sm)',
         md: 'p-(--btn-md) text-(--btn-text-md)',
         lg: 'p-(--btn-lg) text-(--btn-text-lg)',
-        circ: 'p-(--btn-sm) rounded-full',
     };
 
     const sizeVarientsCopy:Record<NonNullable<Props['size']>, string> = {
         sm: 'text-(length:--btn-text-sm)',
         md: 'text-(length:--btn-text-md)',
         lg: 'text-(length:--btn-text-lg)',
-        circ: ''
     }
 
     // map type classes for the button
@@ -48,13 +45,7 @@
 </script>
 
 <div class="group inline-block">
-    {#if size === 'circ'}
-        <button onclick={onClick} class="{`cursor-pointer ${sizeVariants[size]} ${typeVariantsBtn[type]}`}">
-            <span class="{`${sizeVarientsCopy[size]} ${typeVariantsCopy[type]}`}">{label}</span>
-        </button>
-    {:else}
-        <button class="{`cursor-pointer rounded-sm ${sizeVariants[size]} ${typeVariantsBtn[type]}`}">
-            <span class="{`${sizeVarientsCopy[size]} ${typeVariantsCopy[type]}`}">{label}</span>
-        </button>
-    {/if}
+    <button onclick={onClick} class="{`cursor-pointer rounded-sm ${sizeVariants[size]} ${typeVariantsBtn[type]}`}">
+        <span class="{`${sizeVarientsCopy[size]} ${typeVariantsCopy[type]}`}">{label}</span>
+    </button>
 </div>

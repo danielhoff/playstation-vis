@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { randomInt } from "$lib/utils/randomNumber.ts";
+    import { randomInt } from "$lib/utils/randomNumber";
 
     type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
 
