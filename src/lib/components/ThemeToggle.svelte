@@ -18,8 +18,8 @@
     cursor-pointer
     w-[50px] h-[50px]
     rounded-full
-    shadow-[0_6px_12px_rgba(0,0,0,0.3),0_2px_4px_rgba(0,0,0,0.2)] 
-    hover:shadow-[0_10px_20px_rgba(0,0,0,0.35),0_4px_8px_rgba(0,0,0,0.25)] 
+    shadow-(--box-shadow-primary)
+    hover:shadow-(--box-shadow-primary-hover)
     bg-(--color-primary)
     hover:scale-105
     transition-all

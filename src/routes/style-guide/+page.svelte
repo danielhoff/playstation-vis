@@ -3,7 +3,6 @@
     import Button from '$lib/components/ui-library/Button.svelte';
 </script>
 
-
 <h2>Buttons</h2>
 <div class="flex">
     <div class="w-8 flex-1">
@@ -24,5 +23,3 @@
         <Button label="Warning Large" size="lg" type="warning"></Button>
     </div>
 </div>
-
-<Button size="circ" label="hi"></Button>

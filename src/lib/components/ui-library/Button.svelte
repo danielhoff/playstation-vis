@@ -45,7 +45,16 @@
 </script>
 
 <div class="group inline-block">
-    <button onclick={onClick} class="{`cursor-pointer rounded-sm ${sizeVariants[size]} ${typeVariantsBtn[type]}`}">
+    <button
+        onclick={onClick}
+        class="{`
+            cursor-pointer
+            rounded-sm
+            ${sizeVariants[size]}
+            ${typeVariantsBtn[type]}
+            shadow-(--box-shadow-primary)
+            hover:shadow-(--box-shadow-primary-hover)`
+        }">
         <span class="{`${sizeVarientsCopy[size]} ${typeVariantsCopy[type]}`}">{label}</span>
     </button>
 </div>
