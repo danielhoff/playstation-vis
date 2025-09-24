@@ -22,7 +22,7 @@
 <Background></Background>
 
 <!-- Dark class goes here :) -->
-<div class="{theme} bg-(--background-color) p-(--space-xl) h-dvh w-dvw">
+<div class="{theme} p-(--space-xl) h-dvh w-dvw">
 	<Button onClick={() => toggleTheme()} size="circ" label="toggle dark/light mode"></Button>
 
 	{@render children?.()}
