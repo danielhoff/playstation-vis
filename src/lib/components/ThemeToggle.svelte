@@ -12,7 +12,7 @@
     let hover:boolean = $state(false);
 </script>
 
-<button onmouseenter="{() => hover = true}" onmouseleave="{() => hover = false}" aria-label="Theme toggle" class="
+<button onmouseenter="{() => hover = true}" onmouseleave="{() => hover = false}" class:button-hover={hover} class="
     relative
     overflow-hidden
     cursor-pointer
@@ -47,6 +47,16 @@
     @keyframes dark-enter {
         0%   { transform: translate(-50%, 125%); }
         100% { transform: translate(-50%, -50%); }
+    }
+
+    @keyframes button-hover {
+        0% { background-color: var(--color-primary)}
+        100% { background-color: var(--color-primary-hover)}
+    }
+
+    .button-hover {
+        animation: button-hover 0.4s ease-out forwards;
+        animation-delay: 1.6s
     }
 
     .light-exit {
