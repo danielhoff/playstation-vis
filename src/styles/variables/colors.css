@@ -64,4 +64,9 @@
     --color-ps-grey-800: oklch(39.423% 0.02135 267.49);
     --color-ps-grey-900: oklch(28.943% 0.01523 269.15);
     --color-ps-grey-950: oklch(23.508% 0.01006 268.25);
+
+    --box-shadow-primary: 0 6px 12px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2);
+    --box-shadow-primary-hover: 0 10px 20px rgba(0,0,0,0.35), 0 4px 8px rgba(0,0,0,0.25);
+
+    --box-shadow-container: 0 12px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
 }

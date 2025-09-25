@@ -49,7 +49,7 @@
         onclick={onClick}
         class="{`
             cursor-pointer
-            rounded-sm
+            rounded-md
             ${sizeVariants[size]}
             ${typeVariantsBtn[type]}
             shadow-(--box-shadow-primary)
