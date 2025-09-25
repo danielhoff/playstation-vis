@@ -1,18 +1,33 @@
 <script lang="ts">
     interface Props {
         theme: 'light' | 'dark';
-        onClick?: (event: MouseEvent) => void;
+        onClick: (event: MouseEvent) => void;
     }
 
     let {
         theme = 'light',
-        onClick
+        onClick: onClick
     }: Props = $props();
 
     let hover:boolean = $state(false);
+    let cancelAnimation:boolean = $state(false);
+
+    const onMouseEnter = () => {
+        hover = true;
+    }
+
+    const onMouseLeave = () => {
+        hover = false;
+        cancelAnimation = false;
+    }
+
+    const handleClick = (event: MouseEvent) => {
+        cancelAnimation = true;
+        onClick(event);
+    }
 </script>
 
-<button aria-label="toggle theme" onclick={onClick} onmouseenter="{() => hover = true}" onmouseleave="{() => hover = false}" class:button-hover={hover} class="
+<button aria-label="toggle theme" onclick={handleClick} onmouseenter="{onMouseEnter}" onmouseleave="{onMouseLeave}" class:button-hover={hover && !cancelAnimation} class="
     relative
     overflow-hidden
     cursor-pointer
@@ -25,21 +40,40 @@
     transition-all
     duration-300
     ease-in-out">
-        <i class="icon-light absolute top-[50%] left-[50%] -translate-1/2 inline-block w-[30px] h-[30px] bg-center bg-no-repeat bg-[url(/src/lib/assets/light.svg)]" class:light-exit={hover}></i>
-        <i class="icon-dark absolute top-[50%] left-[50%] w-[30px] h-[30px] bg-center bg-no-repeat bg-[url(/src/lib/assets/dark.svg)]" class:dark-enter={hover}></i>
+        <i
+            class="icon-light absolute top-[50%] left-[50%] inline-block w-[30px] h-[30px] bg-center bg-no-repeat bg-[url(/src/lib/assets/light.svg)]"
+            class:light-exit={hover && theme === 'light' && !cancelAnimation}
+            class:light-enter={hover && theme === 'dark' && !cancelAnimation}
+            class:active={theme === 'light'}
+            class:inactive={theme === 'dark'}>
+        </i>
+        <i
+            class="icon-dark inactive absolute top-[50%] left-[50%] w-[30px] h-[30px] bg-center bg-no-repeat bg-[url(/src/lib/assets/dark.svg)]"
+            class:dark-enter={hover && theme === 'light' && !cancelAnimation}
+            class:dark-exit={hover && theme === 'dark' && !cancelAnimation}
+            class:active={theme === 'dark'}
+            class:inactive={theme === 'light'}>
+        </i>
 </button>
 
 <style>
-    .icon-dark {
-        /* cant use tailwind for this. for reason it messes up the animation below */
+    /* cant use tailwind for active/inactive. for some reason it messes up the animation below */
+    .active {
+        transform: translate(-50%, -50%);
+    }
+    .inactive {
         transform: translate(-50%, 125%);
     }
 
+    .inactive.icon-light {
+        background-image: url('/src/lib/assets/light-inactive.svg');
+    }
+
     @keyframes light-exit {
-        0%   { transform: rotate(0deg); }
-        50%  { transform: rotate(360deg); }
-        75%  { transform: rotate(180deg); }
-        100% { transform: translateY(125%); }
+        0%   { transform: translate(-50%, -50%) rotate(0deg); }
+        50%  { transform: translate(-50%, -50%) rotate(360deg); }
+        75%  { transform: translate(-50%, 75%) rotate(180deg); }
+        100% { transform: translate(-50%, 125%); }
     }
 
     @keyframes dark-enter {
@@ -61,8 +95,19 @@
         animation: light-exit 2s ease-in-out forwards;
     }
 
+    .light-enter {
+        animation: light-exit 2s ease-in-out forwards;
+        animation-direction: reverse;
+        animation-delay: 0.2s;
+    }
+
     .dark-enter {
-        animation: dark-enter 1s ease-in-out forwards;
-        animation-delay: 1.8s;
+        animation: dark-enter 0.7s ease-in-out forwards;
+        animation-delay: 1.6s;
+    }
+
+    .dark-exit {
+        animation: dark-enter 0.7s ease-in-out forwards;
+        animation-direction: reverse;
     }
 </style>
