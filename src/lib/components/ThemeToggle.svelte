@@ -53,7 +53,7 @@
     }
 
     .button-hover {
-        animation: button-hover 0.4s ease-out forwards;
+        animation: button-hover 0.5s ease-out forwards;
         animation-delay: 1.6s
     }
 

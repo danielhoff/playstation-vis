@@ -2,4 +2,8 @@
   html {
     font-family: var(--font-space-mono);
   }
+
+  hr {
+    border: var(--border);
+  }
 }
