@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <g id="cross" transform="translate(32,32)">
+    <line
+      x1="-20" y1="-20"
+      x2="20" y2="20"
+      stroke="oklch(81.269% 0.07188 281.16)"
+      stroke-width="4"
+      stroke-linecap="round"
+    />
+    <line
+      x1="-20" y1="20"
+      x2="20" y2="-20"
+      stroke="oklch(81.269% 0.07188 281.16)"
+      stroke-width="4"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>
