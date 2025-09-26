@@ -54,7 +54,10 @@
             ${typeVariantsBtn[type]}
             bg-size-[5px_5px]
             shadow-(--box-shadow-primary)
-            hover:shadow-(--box-shadow-primary-hover)`
+            hover:shadow-(--box-shadow-primary-hover)
+            transition-all
+            ease-out
+            duration-300`
         }">
         <span class="{`${sizeVarientsCopy[size]} ${typeVariantsCopy[type]}`}">{label}</span>
     </button>
