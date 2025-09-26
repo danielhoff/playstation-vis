@@ -31,9 +31,9 @@
 
     // map type classes for the button
     const typeVariantsBtn:Record<NonNullable<Props['type']>, string> = {
-        primary: 'bg-(--color-primary) group-hover:bg-(--color-primary-hover) group-hover:bg-[url(/src/lib/assets/cross.svg)] bg-size-[5px_5px]',
-        secondary: 'bg-(--color-secondary) group-hover:bg-(--color-secondary-hover)',
-        warning: 'bg-(--color-warning) group-hover:bg-(--color-warning-hover)',
+        primary: 'bg-(--color-primary) group-hover:bg-(--color-primary-hover) group-hover:bg-[url(/src/lib/assets/cross.svg)]',
+        secondary: 'bg-(--color-secondary) group-hover:bg-(--color-secondary-hover) group-hover:bg-[url(/src/lib/assets/triangle.svg)]',
+        warning: 'bg-(--color-warning) group-hover:bg-(--color-warning-hover) group-hover:bg-[url(/src/lib/assets/circle.svg)]',
     }
 
     const typeVariantsCopy:Record<NonNullable<Props['type']>, string> = {
@@ -52,6 +52,7 @@
             rounded-md
             ${sizeVariants[size]}
             ${typeVariantsBtn[type]}
+            bg-size-[5px_5px]
             shadow-(--box-shadow-primary)
             hover:shadow-(--box-shadow-primary-hover)`
         }">
