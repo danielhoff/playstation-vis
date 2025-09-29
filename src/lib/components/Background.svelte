@@ -1,6 +1,8 @@
 <script lang="ts">
     import { randomInt } from "$lib/utils/randomNumber";
 
+    type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
+
     interface Props {
         theme: 'light' | 'dark';
     }
@@ -8,8 +10,6 @@
     let {
         theme = 'light',
     }: Props = $props();
-
-    type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
 
     const symbols: {
         id: SymbolId,
