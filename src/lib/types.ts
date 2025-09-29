@@ -14,3 +14,5 @@ export type Metric = {
 export type Group =
   | { id: number; kind: 'global'; description: GlobalDescription; start: number; end: number }
   | { id: number; kind: 'process'; description: string; start: number; end: number };
+
+export type BoundariesFormatted = Date[];

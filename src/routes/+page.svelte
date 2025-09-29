@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { boundariesData, metricsData, groupsData } from '$lib/stores/data.svelte';
+    import { metricsData, groupsData, boundariesFormatted } from '$lib/stores/data.svelte';
 
-    $inspect(boundariesData[0]);
     $inspect(metricsData[0]);
     $inspect(groupsData[0]);
+    $inspect(boundariesFormatted());
 </script>
 
 <h1>Welcome to SvelteKit</h1>
