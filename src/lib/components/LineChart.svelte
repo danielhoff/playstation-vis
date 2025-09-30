@@ -26,11 +26,9 @@
 
     const points = generatePoints(metricsData, boundaries);
 
+    $inspect(points);
     // groups the points by label to get the line (metric.component-metric.group)
     const groupedPoints = d3.rollup(points, value => value, d => d.label);
-
-    // prepares data for plotting on graph, removes keys added in the rollup
-    // const lineSeries: Point[][] = Array.from(groupedPoints.values());
 
     const line = d3.line<Point>()
         .x(d => x(d.boundary))
