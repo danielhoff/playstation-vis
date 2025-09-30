@@ -1,31 +1,23 @@
 <script lang="ts">
 	import '../styles/app.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import { getTheme } from '$lib/stores/theme.svelte';
 	import Background from '$lib/components/Background.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	let { children } = $props();
-
-	type Theme = 'light' | 'dark';
-
-	let theme:Theme = $state('light');
-
-	const toggleTheme = () => {
-		theme = theme === 'light' ? 'dark' : 'light';
-	}
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<Background theme={theme}></Background>
+<Background></Background>
 
 <!-- class for light/dark modes goes here -->
-<div class="{theme} p-(--space-lg) h-dvh w-dvw">
+<div class="{getTheme()} p-(--space-lg) h-dvh w-dvw">
 	<div class="flex flex-row-reverse">
-		<ThemeToggle onClick={() => toggleTheme()} theme={theme}></ThemeToggle>
-		<!-- <Button onClick={() => toggleTheme()} size="circ" icon="light"></Button> -->
+		<ThemeToggle></ThemeToggle>
 	</div>
 
 	{@render children?.()}

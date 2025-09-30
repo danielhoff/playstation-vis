@@ -1,13 +1,5 @@
 <script lang="ts">
-    interface Props {
-        theme: 'light' | 'dark';
-        onClick: (event: MouseEvent) => void;
-    }
-
-    let {
-        theme = 'light',
-        onClick: onClick
-    }: Props = $props();
+    import { getTheme, toggleTheme } from "$lib/stores/theme.svelte";
 
     let hover:boolean = $state(false);
     let cancelAnimation:boolean = $state(false);
@@ -23,7 +15,7 @@
 
     const handleClick = (event: MouseEvent) => {
         cancelAnimation = true;
-        onClick(event);
+        toggleTheme();
     }
 </script>
 
@@ -42,17 +34,17 @@
     ease-in-out">
         <i
             class="icon-light absolute top-[50%] left-[50%] inline-block w-[30px] h-[30px] bg-center bg-no-repeat bg-[url(/src/lib/assets/light.svg)]"
-            class:light-exit={hover && theme === 'light' && !cancelAnimation}
-            class:light-enter={hover && theme === 'dark' && !cancelAnimation}
-            class:active={theme === 'light'}
-            class:inactive={theme === 'dark'}>
+            class:light-exit={hover && getTheme() === 'light' && !cancelAnimation}
+            class:light-enter={hover && getTheme() === 'dark' && !cancelAnimation}
+            class:active={getTheme() === 'light'}
+            class:inactive={getTheme() === 'dark'}>
         </i>
         <i
             class="icon-dark inactive absolute top-[50%] left-[50%] w-[30px] h-[30px] bg-center bg-no-repeat bg-[url(/src/lib/assets/dark.svg)]"
-            class:dark-enter={hover && theme === 'light' && !cancelAnimation}
-            class:dark-exit={hover && theme === 'dark' && !cancelAnimation}
-            class:active={theme === 'dark'}
-            class:inactive={theme === 'light'}>
+            class:dark-enter={hover && getTheme() === 'light' && !cancelAnimation}
+            class:dark-exit={hover && getTheme() === 'dark' && !cancelAnimation}
+            class:active={getTheme() === 'dark'}
+            class:inactive={getTheme() === 'light'}>
         </i>
 </button>
 
