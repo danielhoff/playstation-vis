@@ -1,7 +1,9 @@
+export type Theme = 'light' | 'dark';
 export type Component = 'in use' | 'modified' | 'standby' | 'free' | 'user' | 'kernal' | 'sent' | 'recieved';
 export type GlobalDescription = 'memory' | 'cpu' | 'network';
 export type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
 export type Kind = 'global' | 'process';
+export type OKLCHFormat = `oklch(${number}% ${number} ${number})`;
 
 export type Boundaries = number[];
 
@@ -27,3 +29,6 @@ export type Point = {
   label: string;
   group: Group;
 };
+
+// Colors must have the properties of the global descriptions + process
+export type Colors = Record<GlobalDescription | Extract<Kind, 'process'>, OKLCHFormat>;

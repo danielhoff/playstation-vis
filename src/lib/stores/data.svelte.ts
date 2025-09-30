@@ -2,7 +2,7 @@ import boundariesJson from '$lib/data/boundaries.json';
 import metricsJson from '$lib/data/metrics.json';
 import groupsJson from '$lib/data/groups.json';
 import { julianToDate } from '$lib/utils/julianToDate';
-import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point } from '$lib/types.ts';
+import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription } from '$lib/types.ts';
 import { SvelteMap } from 'svelte/reactivity';
 
 // makes all 3 possible to grab the data like metricsData[0] rather than metricsData.metrics[0]
@@ -20,13 +20,24 @@ export const groupsMap:GroupsMap = new SvelteMap(
   groupsData.map(g => [g.id, g] as const)
 );
 
-// format the timestamps to data D3 can use
-const convertBoundariesFormatted = $derived(() => {
-  return boundariesData.map((boundary) => julianToDate(boundary));
-})
-
 export const boundariesFormatted = ():BoundariesFormatted => {
   return convertBoundariesFormatted();
+}
+
+// light theme
+export const colorsLight:Colors = {
+  memory: 'oklch(42.392% 0.20821 269.97)',
+  cpu: 'oklch(72.061% 0.11854 190.64)',
+  network: 'oklch(56.295% 0.22634 27.822)',
+  process: 'oklch(63.9% 0.22675 356.89)',
+}
+
+// dark theme
+export const colorsDark:Colors = {
+  memory: 'oklch(42.392% 0.20821 269.97)',
+  cpu: 'oklch(72.061% 0.11854 190.64)',
+  network: 'oklch(56.295% 0.22634 27.822)',
+  process: 'oklch(63.9% 0.22675 356.89)',
 }
 
 // returns an array of points to map to the chart
@@ -49,7 +60,7 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
                 boundary: boundaries[i],
                 value: value,
                 label: `${component}-${group}`,
-                // ! = negate TS complaing about it potentially being undefined - however we know it won't be. It will still flag up unexpected data types
+                // ! = negate TS complaining about it potentially being undefined - however we know it won't be. It will still flag up unexpected data types
                 group: relatedGroup!
             });
         })
@@ -57,3 +68,17 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
 
     return points;
 }
+
+export const getLineColor = (point: Point, colors: Colors) :OKLCHFormat => {
+  const { kind, description } = point.group;
+    if (kind === 'global') {
+        return colors[description as GlobalDescription];
+    } else {
+        return colors.process;
+    }
+}
+
+// format the timestamps to data D3 can use
+const convertBoundariesFormatted = $derived(() => {
+  return boundariesData.map((boundary) => julianToDate(boundary));
+});

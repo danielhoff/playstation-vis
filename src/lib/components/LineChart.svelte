@@ -1,10 +1,11 @@
 <script lang="ts">
     import * as d3 from 'd3';
     import { onMount } from "svelte";
-    import type { BoundariesFormatted, Metric, Point } from '$lib/types';
-    import { metricsData, groupsData, boundariesFormatted, generatePoints } from '$lib/stores/data.svelte';
+    import type { BoundariesFormatted, Metric, Point, Theme, Colors, GlobalDescription } from '$lib/types';
+    import { getTheme } from '$lib/stores/theme.svelte';
+    import { metricsData, groupsData, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor } from '$lib/stores/data.svelte';
 
-    const boundaries: BoundariesFormatted = boundariesFormatted();
+    const boundaries:BoundariesFormatted = boundariesFormatted();
 
     const width:number = 2000;
     const height:number = 800;
@@ -12,6 +13,15 @@
     const marginRight:number = 20;
     const marginBottom:number = 30;
     const marginLeft:number = 100;
+
+    const theme:Theme = getTheme();
+    let colors:Colors;
+
+    if (theme === 'light') {
+        colors = colorsLight;
+    } else {
+        colors = colorsDark;
+    }
 
     const x = d3.scaleUtc()
         .domain(d3.extent(boundaries) as [Date, Date])
@@ -27,8 +37,11 @@
     const points = generatePoints(metricsData, boundaries);
 
     $inspect(points);
+
     // groups the points by label to get the line (metric.component-metric.group)
     const groupedPoints = d3.rollup(points, value => value, d => d.label);
+
+    $inspect(groupedPoints);
 
     const line = d3.line<Point>()
         .x(d => x(d.boundary))
@@ -42,7 +55,7 @@
 
         const onPointerLeave = () => {
             svg.selectAll('.data-line')
-                .attr('stroke', 'oklch(82.448% 0.10005 348.83)');
+                .style('opacity', 1);
             
             dot.attr('display', 'none');
         }
@@ -53,14 +66,14 @@
             const i = d3.leastIndex(points, p => 
                 Math.hypot(x(p.boundary) - xm, y(p.value) - ym));
                 
-            // TS guard again undefined
+            // TS guard against undefined
             if (i === undefined) return;
 
             const selectedPoint = points[i];
 
             svg.selectAll<SVGPathElement, Point[]>('.data-line')
                 // can use [0] here to get the label as all points on a line have the same label
-                .attr('stroke', d => d[0].label === selectedPoint.label ? "oklch(82.448% 0.10005 348.83)" : "#ddd")
+                .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
                 .filter(d => d[0].label === selectedPoint.label)
                 .raise();
 
@@ -91,13 +104,13 @@
         // drawing lines
         svg.append('g')
             .attr('fill', 'none')
-            .attr('stroke', 'oklch(82.448% 0.10005 348.83)')
             .attr('stroke-width', 1.5)
             .attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
             .selectAll('path')
             .data(groupedPoints.values())
             .join('path')
+            .attr('stroke', d => getLineColor(d[0], colors))
             .attr('class', 'data-line')
             .attr('d', line);
 
