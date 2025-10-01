@@ -29,10 +29,14 @@
         drawChart();
 
         window.addEventListener('resize', () => {
-            d3.selectAll('#line-chart *').remove();
-            drawChart();
+            redrawChart();
         });
     });
+
+    const redrawChart = () => {
+        d3.selectAll('#line-chart *').remove();
+        drawChart();
+    }
 
     const drawChart = () => {
         const container = d3.select('#chart-container').node() as HTMLElement;
@@ -49,7 +53,9 @@
             .range([marginLeft, width - marginRight]);
 
         // needs the extra check to failsafe to a number
-        const yMax:number = d3.max(metricsData.flatMap(metric => metric.data)) ?? 0;
+        const yMax:number = d3.max(
+            Array.from(groupedPoints.values()).flat().map(p => p.value))
+            ?? 0;
 
         const y:d3.ScaleLinear<number, number> = d3.scaleLinear()
             .domain([0, yMax])
@@ -67,9 +73,9 @@
 
     const drawSVG = (width:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
         svg = d3.select<SVGSVGElement, unknown>('#line-chart')
-            .on('mousemove', (event: PointerEvent) => onMouseMove(event, x, y))
-            .on('mouseenter', onMouseEnter)
-            .on('mouseleave', onMouseLeave);
+            .on('pointermove', (event: PointerEvent) => onMouseMove(event, x, y))
+            .on('pointerenter', onMouseEnter)
+            .on('pointerleave', onMouseLeave);
 
         dot = svg.append('g')
             .attr('display', 'none');
@@ -148,7 +154,7 @@
         const selectedPoint = points[i];
 
         svg.selectAll<SVGPathElement, Point[]>('.data-line')
-                // can use [0] here to get the label as all points on a line have the same label
+            // can use [0] here to get the label as all points on a line have the same label
             .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
             .filter(d => d[0].label === selectedPoint.label)
             .raise();
@@ -159,11 +165,12 @@
 
     const handleClick = (event:MouseEvent) => {
         groupedPoints = filteredGroupedPoints(groupedPoints);
+        redrawChart();
     }
 
 </script>
 
 <div id="chart-container" class="h-full">
+    <Button onClick={handleClick} label="Filter test"></Button>
     <svg id="line-chart"></svg>
-    <!-- <Button onclick={handleClick}>Filter!</Button> -->
 </div>
