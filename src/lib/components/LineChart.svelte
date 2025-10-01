@@ -8,13 +8,6 @@
 
     const boundaries:BoundariesFormatted = boundariesFormatted();
 
-    const width:number = 1700;
-    const height:number = 800;
-    const marginTop:number = 20;
-    const marginRight:number = 20;
-    const marginBottom:number = 30;
-    const marginLeft:number = 100;
-
     const theme:Theme = getTheme();
     let colors:Colors;
 
@@ -24,70 +17,59 @@
         colors = colorsDark;
     }
 
-    const x = d3.scaleUtc()
-        .domain(d3.extent(boundaries) as [Date, Date])
-        .range([marginLeft, width - marginRight]);
-
-    // needs the extra check to failsafe to a number
-    const yMax = d3.max(metricsData.flatMap(metric => metric.data)) ?? 0;
-
-    const y = d3.scaleLinear()
-        .domain([0, yMax])
-        .range([height - marginBottom, marginTop]);
-
-    const points = generatePoints(metricsData, boundaries);
-
-    $inspect(points);
+    let points = generatePoints(metricsData, boundaries);
 
     // groups the points by label to get the line (metric.component-metric.group)
     let groupedPoints = d3.rollup(points, value => value, d => d.label);
-
-    $inspect(groupedPoints);
-
-    const line = d3.line<Point>()
-        .x(d => x(d.boundary))
-        .y(d => y(d.value));
     
     let svg:d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
     let dot:d3.Selection<SVGGElement, unknown, HTMLElement, undefined>;
 
     onMount(() => {
-        const onPointerEnter = () => {
-            dot.attr('display', null);
-        }
+        drawChart();
 
-        const onPointerLeave = () => {
-            svg.selectAll<SVGPathElement, Point[]>('.data-line')
-                .style('opacity', 1);
-            
-            dot.attr('display', 'none');
-        }
+        window.addEventListener('resize', () => {
+            d3.selectAll('#line-chart *').remove();
+            drawChart();
+        });
+    });
 
-        const onPointerMove = (event: PointerEvent) => {
-            const [xm, ym] = d3.pointer(event);
+    const drawChart = () => {
+        const container = d3.select('#chart-container').node() as HTMLElement;
+        // where the magic happens, main function to trigger the drawing of the chart
+        const width:number = getContainerWidth(container);
+        const height:number = getContainerHeight(container);
+        const marginTop:number = 20;
+        const marginRight:number = 20;
+        const marginBottom:number = 30;
+        const marginLeft:number = 100;
 
-            const i = d3.leastIndex(points, p => 
-                Math.hypot(x(p.boundary) - xm, y(p.value) - ym));
-                
-            // TS guard against undefined
-            if (i === undefined) return;
+        const x:d3.ScaleTime<number, number> = d3.scaleUtc()
+            .domain(d3.extent(boundaries) as [Date, Date])
+            .range([marginLeft, width - marginRight]);
 
-            const selectedPoint = points[i];
+        // needs the extra check to failsafe to a number
+        const yMax:number = d3.max(metricsData.flatMap(metric => metric.data)) ?? 0;
 
-            svg.selectAll<SVGPathElement, Point[]>('.data-line')
-                 // can use [0] here to get the label as all points on a line have the same label
-                .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
-                .filter(d => d[0].label === selectedPoint.label)
-                .raise();
+        const y:d3.ScaleLinear<number, number> = d3.scaleLinear()
+            .domain([0, yMax])
+            .range([height - marginBottom, marginTop]);
 
-            dot.attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
-            dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
-        }
+        const line = d3.line<Point>()
+            .x(d => x(d.boundary))
+            .y(d => y(d.value));
 
+        drawSVG(width, x, y);
+        drawXAxis(x, width, height, marginBottom);
+        drawYAxis(y, marginLeft);
+        drawLines(line);
+    }
+
+    const drawSVG = (width:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
         svg = d3.select<SVGSVGElement, unknown>('#line-chart')
-            .on('pointermove', onPointerMove)
-            .on('pointerenter', onPointerEnter)
-            .on('pointerleave', onPointerLeave);
+            .on('mousemove', (event: PointerEvent) => onMouseMove(event, x, y))
+            .on('mouseenter', onMouseEnter)
+            .on('mouseleave', onMouseLeave);
 
         dot = svg.append('g')
             .attr('display', 'none');
@@ -99,25 +81,27 @@
             .attr('text-anchor', 'middle')
             .attr('y', -8);
         
-        drawChart();
-    });
-
-    const drawChart = () => {
         svg.attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', [0, 0, width, height])
+            .attr('height', '100%')
+            // .attr('viewBox', [0, 0, width, height])
             .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;')
+    }
 
-        // x axis
+    const drawXAxis = (x:d3.ScaleTime<number,number>, width:number, height:number, marginBottom:number) => {
+         // x axis
         svg.append('g')
             .attr('transform', `translate(0, ${height - marginBottom})`)
             .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
-        
-        // y axis
+    }
+
+    const drawYAxis = (y:d3.ScaleLinear<number,number>, marginLeft:number) => {
+         // y axis
         svg.append('g')
             .attr('transform', `translate(${marginLeft}, 0)`)
             .call(d3.axisLeft(y));
+    }
 
+    const drawLines = (line:d3.Line<Point>) => {
         // drawing lines
         svg.append('g')
             .attr('fill', 'none')
@@ -132,13 +116,54 @@
             .attr('d', line);
     }
 
+    const getContainerWidth = (container:HTMLElement):number => {
+        return container.offsetWidth;
+    }
+
+    const getContainerHeight = (container:HTMLElement):number => {
+        return container.offsetHeight;
+    }
+
+    // Events
+    const onMouseEnter = () => {
+        dot.attr('display', null);
+    }
+
+    const onMouseLeave = () => {
+        svg.selectAll<SVGPathElement, Point[]>('.data-line')
+            .style('opacity', 1);
+        
+        dot.attr('display', 'none');
+    }
+
+    const onMouseMove = (event: PointerEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
+        const [xm, ym] = d3.pointer(event);
+
+        const i = d3.leastIndex(points, p => 
+            Math.hypot(x(p.boundary) - xm, y(p.value) - ym));
+            
+        // TS guard against undefined
+        if (i === undefined) return;
+
+        const selectedPoint = points[i];
+
+        svg.selectAll<SVGPathElement, Point[]>('.data-line')
+                // can use [0] here to get the label as all points on a line have the same label
+            .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
+            .filter(d => d[0].label === selectedPoint.label)
+            .raise();
+
+        dot.attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
+        dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
+    }
+
     const handleClick = (event:MouseEvent) => {
         groupedPoints = filteredGroupedPoints(groupedPoints);
     }
 
 </script>
 
-<div>
+<div id="chart-container" class="h-full">
     <svg id="line-chart"></svg>
     <!-- <Button onclick={handleClick}>Filter!</Button> -->
 </div>
