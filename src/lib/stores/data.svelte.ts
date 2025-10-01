@@ -1,9 +1,9 @@
+import { SvelteMap } from 'svelte/reactivity';
 import boundariesJson from '$lib/data/boundaries.json';
 import metricsJson from '$lib/data/metrics.json';
 import groupsJson from '$lib/data/groups.json';
 import { julianToDate } from '$lib/utils/julianToDate';
-import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription } from '$lib/types.ts';
-import { SvelteMap } from 'svelte/reactivity';
+import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription, Filters } from '$lib/types.ts';
 
 // makes all 3 possible to grab the data like metricsData[0] rather than metricsData.metrics[0]
 export const boundariesData = $state<Boundaries>(boundariesJson.boundaries);
@@ -23,6 +23,11 @@ export const groupsMap:GroupsMap = new SvelteMap(
 export const boundariesFormatted = ():BoundariesFormatted => {
   return convertBoundariesFormatted();
 }
+
+export const filters = $state<Filters>({
+  kind: null,
+  component: null
+});
 
 // light theme
 export const colorsLight:Colors = {

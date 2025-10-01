@@ -1,11 +1,12 @@
 export type Theme = 'light' | 'dark';
 export type Component = 'in use' | 'modified' | 'standby' | 'free' | 'user' | 'kernal' | 'sent' | 'recieved';
 export type GlobalDescription = 'memory' | 'cpu' | 'network';
-export type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
 export type Kind = 'global' | 'process';
+export type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
 export type OKLCHFormat = `oklch(${number}% ${number} ${number})`;
 
 export type Boundaries = number[];
+export type BoundariesFormatted = Date[];
 
 export type Metric = {
     group: number;
@@ -21,7 +22,8 @@ export type Group =
 
 export type GroupsMap = Map<Group['id'], Group>;
 
-export type BoundariesFormatted = Date[];
+// Colors must have the properties of the global descriptions + process
+export type Colors = Record<GlobalDescription | Extract<Kind, 'process'>, OKLCHFormat>;
 
 export type Point = {
   boundary: Date;
@@ -30,5 +32,12 @@ export type Point = {
   group: Group;
 };
 
-// Colors must have the properties of the global descriptions + process
-export type Colors = Record<GlobalDescription | Extract<Kind, 'process'>, OKLCHFormat>;
+export type FilterList = {
+  id: number;
+  label: string;
+}
+
+export type Filters = {
+  kind: Kind | null;
+  component: Component | null;
+}

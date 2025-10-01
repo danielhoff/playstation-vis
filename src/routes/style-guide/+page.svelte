@@ -2,6 +2,13 @@
 <script lang="ts">
     import Container from '$lib/components/Container.svelte';
     import Button from '$lib/components/ui-library/Button.svelte';
+    import Filter from '$lib/components/ui-library/Filter.svelte';
+
+    const options = [{id: 1, label: 'Option 1'}, {id: 2, label: 'Option 2'}];
+
+    const onChange = (value:Array<number>) => {
+        console.log(value)
+    }
 </script>
 
 <Container>
@@ -28,5 +35,8 @@
                 <Button label="Warning Large" size="lg" type="warning"></Button>
             </div>
         </div>
+        <hr>
+        <h2>Filters</h2>
+            <Filter onChangeEvent={onChange} options="{options}"></Filter>
     </div>
 </Container>
