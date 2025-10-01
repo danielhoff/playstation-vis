@@ -78,6 +78,15 @@ export const getLineColor = (point: Point, colors: Colors) :OKLCHFormat => {
     }
 }
 
+// filters
+export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :SvelteMap<string,Point[]> => {
+
+    const filtered = Array.from(groupedPoints)
+      .filter(([key, points]) => points[0].group.kind === 'process');
+
+    return new SvelteMap(filtered);
+}
+
 // format the timestamps to data D3 can use
 const convertBoundariesFormatted = $derived(() => {
   return boundariesData.map((boundary) => julianToDate(boundary));

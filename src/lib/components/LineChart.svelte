@@ -3,11 +3,12 @@
     import { onMount } from "svelte";
     import type { BoundariesFormatted, Metric, Point, Theme, Colors, GlobalDescription } from '$lib/types';
     import { getTheme } from '$lib/stores/theme.svelte';
-    import { metricsData, groupsData, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor } from '$lib/stores/data.svelte';
+    import { metricsData, groupsData, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, filteredGroupedPoints} from '$lib/stores/data.svelte';
+    import Button from './ui-library/Button.svelte';
 
     const boundaries:BoundariesFormatted = boundariesFormatted();
 
-    const width:number = 2000;
+    const width:number = 1700;
     const height:number = 800;
     const marginTop:number = 20;
     const marginRight:number = 20;
@@ -39,22 +40,24 @@
     $inspect(points);
 
     // groups the points by label to get the line (metric.component-metric.group)
-    const groupedPoints = d3.rollup(points, value => value, d => d.label);
+    let groupedPoints = d3.rollup(points, value => value, d => d.label);
 
     $inspect(groupedPoints);
 
     const line = d3.line<Point>()
         .x(d => x(d.boundary))
         .y(d => y(d.value));
+    
+    let svg:d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
+    let dot:d3.Selection<SVGGElement, unknown, HTMLElement, undefined>;
 
     onMount(() => {
-
         const onPointerEnter = () => {
             dot.attr('display', null);
         }
 
         const onPointerLeave = () => {
-            svg.selectAll('.data-line')
+            svg.selectAll<SVGPathElement, Point[]>('.data-line')
                 .style('opacity', 1);
             
             dot.attr('display', 'none');
@@ -72,7 +75,7 @@
             const selectedPoint = points[i];
 
             svg.selectAll<SVGPathElement, Point[]>('.data-line')
-                // can use [0] here to get the label as all points on a line have the same label
+                 // can use [0] here to get the label as all points on a line have the same label
                 .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
                 .filter(d => d[0].label === selectedPoint.label)
                 .raise();
@@ -81,15 +84,29 @@
             dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
         }
 
-        const svg = d3.select('#line-chart')
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewbox', [0, 0, width, height])
-            .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;')
+        svg = d3.select<SVGSVGElement, unknown>('#line-chart')
             .on('pointermove', onPointerMove)
             .on('pointerenter', onPointerEnter)
             .on('pointerleave', onPointerLeave);
+
+        dot = svg.append('g')
+            .attr('display', 'none');
+        
+        dot.append('circle')
+            .attr('r', 2.5);
+        
+        dot.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('y', -8);
+        
+        drawChart();
+    });
+
+    const drawChart = () => {
+        svg.attr('width', width)
+            .attr('height', height)
+            .attr('viewBox', [0, 0, width, height])
+            .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;')
 
         // x axis
         svg.append('g')
@@ -113,18 +130,15 @@
             .attr('stroke', d => getLineColor(d[0], colors))
             .attr('class', 'data-line')
             .attr('d', line);
+    }
 
-        const dot = svg.append('g')
-            .attr('display', 'none');
-        
-        dot.append('circle')
-            .attr('r', 2.5);
-        
-        dot.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('y', -8);
-    });
+    const handleClick = (event:MouseEvent) => {
+        groupedPoints = filteredGroupedPoints(groupedPoints);
+    }
 
 </script>
 
-<div id="line-chart"></div>
+<div>
+    <svg id="line-chart"></svg>
+    <!-- <Button onclick={handleClick}>Filter!</Button> -->
+</div>
