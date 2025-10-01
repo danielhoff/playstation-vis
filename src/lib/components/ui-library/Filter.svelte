@@ -1,26 +1,26 @@
 <script lang="ts">
-import Svelecte from 'svelecte';
-import type { FilterList } from '$lib/types';
+    import Svelecte from 'svelecte';
+    import type { FilterOption } from '$lib/types';
 
-interface Props {
-    options: FilterList[];
-    multiple?: boolean;
-    searchable?: boolean;
-    onChangeEvent: (value:Array<number>) => void;
-}
+    interface Props {
+        options: FilterOption[];
+        multiple?: boolean;
+        searchable?: boolean;
+        onChangeEvent: (value:Array<string>) => void;
+    }
 
-let {
-    options = [],
-    multiple = true,
-    searchable = true,
-    onChangeEvent
-}: Props = $props();
+    let {
+        options = [],
+        multiple = true,
+        searchable = true,
+        onChangeEvent
+    }: Props = $props();
 
-let value = $state([]);
+    let value = $state([]);
 
-const handleChange = () => {
-    onChangeEvent(value);
-}
+    const handleChange = () => {
+        onChangeEvent(value);
+    }
 </script>
 
 <Svelecte onChange={handleChange} options={options} searchable={searchable}  multiple={multiple} bind:value={value}></Svelecte>

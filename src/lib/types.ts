@@ -1,5 +1,5 @@
 export type Theme = 'light' | 'dark';
-export type Component = 'in use' | 'modified' | 'standby' | 'free' | 'user' | 'kernal' | 'sent' | 'recieved';
+export type Component = 'in use' | 'modified' | 'standby' | 'free' | 'user' | 'kernel' | 'sent' | 'received';
 export type GlobalDescription = 'memory' | 'cpu' | 'network';
 export type Kind = 'global' | 'process';
 export type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
@@ -29,15 +29,16 @@ export type Point = {
   boundary: Date;
   value: number;
   label: string;
-  group: Group;
+  component: Component;
+  groupId: number;
 };
 
-export type FilterList = {
-  id: number;
+export type FilterOption = {
+  value: string;
   label: string;
 }
 
 export type Filters = {
-  kind: Kind | null;
-  component: Component | null;
+  kind: Kind[];
+  component: Component[];
 }

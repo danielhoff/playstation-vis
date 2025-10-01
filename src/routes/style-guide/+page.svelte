@@ -4,10 +4,10 @@
     import Button from '$lib/components/ui-library/Button.svelte';
     import Filter from '$lib/components/ui-library/Filter.svelte';
 
-    const options = [{id: 1, label: 'Option 1'}, {id: 2, label: 'Option 2'}];
+    const options = [{value: 'option-1', label: 'Option 1'}, {value: 'option-2', label: 'Option 2'}];
 
-    const onChange = (value:Array<number>) => {
-        console.log(value)
+    const onChange = (value:Array<string>) => {
+        console.log(value);
     }
 </script>
 

@@ -3,7 +3,7 @@ import boundariesJson from '$lib/data/boundaries.json';
 import metricsJson from '$lib/data/metrics.json';
 import groupsJson from '$lib/data/groups.json';
 import { julianToDate } from '$lib/utils/julianToDate';
-import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription, Filters } from '$lib/types.ts';
+import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription, Filters, FilterOption} from '$lib/types.ts';
 
 // makes all 3 possible to grab the data like metricsData[0] rather than metricsData.metrics[0]
 export const boundariesData = $state<Boundaries>(boundariesJson.boundaries);
@@ -25,9 +25,25 @@ export const boundariesFormatted = ():BoundariesFormatted => {
 }
 
 export const filters = $state<Filters>({
-  kind: null,
-  component: null
+  kind: [],
+  component: []
 });
+
+export const kindFilter:Array<FilterOption> = [
+  { value: 'global', label: 'Global' },
+  { value: 'process', label: 'Process' }
+];
+
+export const componentFilter:Array<FilterOption> = [
+  { value: 'in use', label: 'In use' },
+  { value: 'modified', label: 'Modified' },
+  { value: 'standby', label: 'Standby' },
+  { value: 'free', label: 'Free' },
+  { value: 'user', label: 'User' },
+  { value: 'kernel', label: 'Kernel' },
+  { value: 'sent', label: 'Sent' },
+  { value: 'received', label: 'Received' }
+];
 
 // light theme
 export const colorsLight:Colors = {
@@ -58,15 +74,12 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
                 return false;
             }
 
-            // using map instead of something like array.find as the performance cost was expensive
-            const relatedGroup = groupsMap.get(group);
-
             points.push({
                 boundary: boundaries[i],
                 value: value,
                 label: `${component}-${group}`,
-                // ! = negate TS complaining about it potentially being undefined - however we know it won't be. It will still flag up unexpected data types
-                group: relatedGroup!
+                component: component,
+                groupId: group
             });
         })
     }
@@ -75,7 +88,8 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
 }
 
 export const getLineColor = (point: Point, colors: Colors) :OKLCHFormat => {
-  const { kind, description } = point.group;
+  const relatedGroup = groupsMap.get(point.groupId);
+  const { kind, description } = relatedGroup as Group;
     if (kind === 'global') {
         return colors[description as GlobalDescription];
     } else {
@@ -83,11 +97,39 @@ export const getLineColor = (point: Point, colors: Colors) :OKLCHFormat => {
     }
 }
 
-// filters
+// filters - cascading filtering 
 export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :SvelteMap<string,Point[]> => {
+    const currentFilters = $state.snapshot(filters);
 
     const filtered = Array.from(groupedPoints)
-      .filter(([key, points]) => points[0].group.kind === 'process');
+      .filter(([key, points]) => {
+        const firstPoint = points[0];
+        const relatedGroup = groupsMap.get(firstPoint.groupId);
+        // this keeps TS happy
+        if (!relatedGroup) return false;
+
+        return Object.entries(currentFilters).every(([filterKey, filterValues]) => {
+          const key = filterKey as keyof Filters; // cast key
+          const filters = filterValues as Filters[keyof Filters]; // cast values
+
+          if (!filters || filters.length === 0) return true;
+
+          let value: string;
+
+          switch (key) {
+              case 'kind':
+                  value = relatedGroup.kind;
+                  break;
+              case 'component':
+                  value = firstPoint.component;
+                  break;
+              default:
+                  return true;
+          }
+
+          return (filters as string[]).includes(value);
+      });
+    });
 
     return new SvelteMap(filtered);
 }

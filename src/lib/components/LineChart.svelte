@@ -3,8 +3,9 @@
     import { onMount } from "svelte";
     import type { BoundariesFormatted, Metric, Point, Theme, Colors, GlobalDescription } from '$lib/types';
     import { getTheme } from '$lib/stores/theme.svelte';
-    import { metricsData, groupsData, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, filteredGroupedPoints} from '$lib/stores/data.svelte';
+    import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, filteredGroupedPoints} from '$lib/stores/data.svelte';
     import Button from './ui-library/Button.svelte';
+    import ChartFilters from './ChartFilters.svelte';
 
     const boundaries:BoundariesFormatted = boundariesFormatted();
 
@@ -19,8 +20,10 @@
 
     let points = generatePoints(metricsData, boundaries);
 
-    // groups the points by label to get the line (metric.component-metric.group)
+    // groups the points into lines: label is - (metric.component-metric.group)
     let groupedPoints = d3.rollup(points, value => value, d => d.label);
+
+    // $inspect(groupedPoints);
     
     let svg:d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
     let dot:d3.Selection<SVGGElement, unknown, HTMLElement, undefined>;
@@ -89,7 +92,6 @@
         
         svg.attr('width', width)
             .attr('height', '100%')
-            // .attr('viewBox', [0, 0, width, height])
             .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;')
     }
 
@@ -163,14 +165,18 @@
         dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
     }
 
-    const handleClick = (event:MouseEvent) => {
+    const filterChart = () => {
+        groupedPoints = d3.rollup(points, value => value, d => d.label);
         groupedPoints = filteredGroupedPoints(groupedPoints);
+        console.log(groupedPoints);
         redrawChart();
     }
 
 </script>
 
+<ChartFilters onFilterChange={filterChart}></ChartFilters>
+
 <div id="chart-container" class="h-full">
-    <Button onClick={handleClick} label="Filter test"></Button>
+    <!-- <Button onClick={handleClick} label="Filter test"></Button> -->
     <svg id="line-chart"></svg>
 </div>
