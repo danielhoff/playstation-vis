@@ -131,7 +131,6 @@ export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :Svel
 
         return (Object.entries(currentFilters) as [keyof Filters, string[]][])
           .every(([key, filtervalues]) => {
-          console.log(key, filtervalues);
 
           if (!filtervalues || filtervalues.length === 0) return true;
 

@@ -173,9 +173,17 @@
 
 </script>
 
-<ChartFilters onFilterChange={filterChart}></ChartFilters>
-
-<div id="chart-container" class="h-full">
+<div id="chart-container" class="h-[70%]">
     <!-- <Button onClick={handleClick} label="Filter test"></Button> -->
     <svg id="line-chart"></svg>
+</div>
+<hr />
+<div class="chart-helpers p-(--space-md) flex">
+    <div class="filters w-1/2 pr-(--space-md) border-r-(--border)">
+        <ChartFilters onFilterChange={filterChart}></ChartFilters>
+    </div>
+    <div class="meta w-1/2 pl-(--space-md)">
+        <h3>Meta</h3>
+        <!-- <ChartFilters onFilterChange={filterChart}></ChartFilters> -->
+    </div>
 </div>
