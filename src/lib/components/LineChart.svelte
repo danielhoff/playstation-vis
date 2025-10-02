@@ -76,7 +76,7 @@
 
     const drawSVG = (width:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
         svg = d3.select<SVGSVGElement, unknown>('#line-chart')
-            .on('pointermove', (event: PointerEvent) => onMouseMove(event, x, y))
+            // .on('pointermove', (event: PointerEvent) => onMouseMove(event, x, y))
             .on('pointerenter', onMouseEnter)
             .on('pointerleave', onMouseLeave);
 
@@ -144,31 +144,30 @@
         dot.attr('display', 'none');
     }
 
-    const onMouseMove = (event: PointerEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
-        const [xm, ym] = d3.pointer(event);
+    // const onMouseMove = (event: PointerEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
+    //     const [xm, ym] = d3.pointer(event);
 
-        const i = d3.leastIndex(points, p => 
-            Math.hypot(x(p.boundary) - xm, y(p.value) - ym));
+    //     const i = d3.leastIndex(points, p => 
+    //         Math.hypot(x(p.boundary) - xm, y(p.value) - ym));
             
-        // TS guard against undefined
-        if (i === undefined) return;
+    //     // TS guard against undefined
+    //     if (i === undefined) return;
 
-        const selectedPoint = points[i];
+    //     const selectedPoint = points[i];
 
-        svg.selectAll<SVGPathElement, Point[]>('.data-line')
-            // can use [0] here to get the label as all points on a line have the same label
-            .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
-            .filter(d => d[0].label === selectedPoint.label)
-            .raise();
+    //     svg.selectAll<SVGPathElement, Point[]>('.data-line')
+    //         // can use [0] here to get the label as all points on a line have the same label
+    //         .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
+    //         .filter(d => d[0].label === selectedPoint.label)
+    //         .raise();
 
-        dot.attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
-        dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
-    }
+    //     dot.attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
+    //     dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
+    // }
 
     const filterChart = () => {
         groupedPoints = d3.rollup(points, value => value, d => d.label);
         groupedPoints = filteredGroupedPoints(groupedPoints);
-        console.log(groupedPoints);
         redrawChart();
     }
 

@@ -41,4 +41,6 @@ export type FilterOption = {
 export type Filters = {
   kind: Kind[];
   component: Component[];
+  description: GlobalDescription[];
+  processDescription: string[];
 }

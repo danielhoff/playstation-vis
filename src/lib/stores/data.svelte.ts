@@ -24,9 +24,13 @@ export const boundariesFormatted = ():BoundariesFormatted => {
   return convertBoundariesFormatted();
 }
 
+export const processDescriptions = $state<string[]>([]);
+
 export const filters = $state<Filters>({
   kind: [],
-  component: []
+  component: [],
+  description: [],
+  processDescription: []
 });
 
 export const kindFilter:Array<FilterOption> = [
@@ -44,6 +48,14 @@ export const componentFilter:Array<FilterOption> = [
   { value: 'sent', label: 'Sent' },
   { value: 'received', label: 'Received' }
 ];
+
+export const descriptionFilter:Array<FilterOption> = [
+  { value: 'memory', label: 'Memory' },
+  { value: 'network', label: 'Network' },
+  { value: 'cpu', label: 'CPU'}
+]
+
+export const processDescriptionFilter:Array<FilterOption> = []
 
 // light theme
 export const colorsLight:Colors = {
@@ -67,6 +79,13 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
 
     for (const metric of metrics) {
         const { start, end, component, group, data} = metric;
+        const relatedGroup = groupsMap.get(group);
+
+        if (relatedGroup?.kind === 'process') {
+          if (!processDescriptions.includes(relatedGroup.description)) {
+            processDescriptions.push(relatedGroup.description);
+          }
+        }
 
         data.forEach((value, i) => {
             // if outside the metrics start/end time, don't plot
@@ -84,6 +103,7 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
         })
     }
 
+    createProcessDescriptionFilter();
     return points;
 }
 
@@ -102,17 +122,18 @@ export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :Svel
     const currentFilters = $state.snapshot(filters);
 
     const filtered = Array.from(groupedPoints)
-      .filter(([key, points]) => {
+      // the label/key is first in the array here, but we don't need it for this
+      .filter(([, points]) => {
         const firstPoint = points[0];
         const relatedGroup = groupsMap.get(firstPoint.groupId);
         // this keeps TS happy
         if (!relatedGroup) return false;
 
-        return Object.entries(currentFilters).every(([filterKey, filterValues]) => {
-          const key = filterKey as keyof Filters; // cast key
-          const filters = filterValues as Filters[keyof Filters]; // cast values
+        return (Object.entries(currentFilters) as [keyof Filters, string[]][])
+          .every(([key, filtervalues]) => {
+          console.log(key, filtervalues);
 
-          if (!filters || filters.length === 0) return true;
+          if (!filtervalues || filtervalues.length === 0) return true;
 
           let value: string;
 
@@ -123,15 +144,28 @@ export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :Svel
               case 'component':
                   value = firstPoint.component;
                   break;
+              case 'description':
+              case 'processDescription':
+                  value = relatedGroup.description;
+                  break;
               default:
                   return true;
           }
 
-          return (filters as string[]).includes(value);
+          return (filtervalues as string[]).includes(value);
       });
     });
 
     return new SvelteMap(filtered);
+}
+
+const createProcessDescriptionFilter = () => {
+  for (const description of $state.snapshot(processDescriptions)) {
+    processDescriptionFilter.push({
+      value: description,
+      label: description
+    });
+  }
 }
 
 // format the timestamps to data D3 can use

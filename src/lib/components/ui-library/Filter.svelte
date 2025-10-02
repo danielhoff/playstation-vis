@@ -23,4 +23,4 @@
     }
 </script>
 
-<Svelecte onChange={handleChange} options={options} searchable={searchable}  multiple={multiple} bind:value={value}></Svelecte>
+<Svelecte onChange={handleChange} options={options} searchable={searchable}  multiple={multiple} closeAfterSelect={true} bind:value={value}></Svelecte>
