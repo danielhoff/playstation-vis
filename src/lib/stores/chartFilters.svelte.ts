@@ -1,6 +1,7 @@
 import { SvelteMap } from 'svelte/reactivity';
-import { groupsMap, processDescriptions } from '$lib/stores/chart.svelte';
+import { boundariesFormatted, groupsMap, processDescriptions } from '$lib/stores/chart.svelte';
 import type { Filters, FilterOption, Point} from '$lib/types.ts';
+import { formatDate } from '$lib/utils/formatDate';
 
 export const filters = $state<Filters>({
   kind: [],
@@ -8,6 +9,9 @@ export const filters = $state<Filters>({
   description: [],
   processDescription: []
 });
+
+export const timeFilter:Array<FilterOption> = [];
+export const timeFilterValue = $state<Date[]>([]);
 
 export const kindFilter:Array<FilterOption> = [
   { value: 'global', label: 'Global' },
@@ -45,10 +49,10 @@ export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :Svel
         // this keeps TS happy
         if (!relatedGroup) return false;
 
-        return (Object.entries(currentFilters) as [keyof Filters, string[]][])
-          .every(([key, filtervalues]) => {
+        return (Object.entries(currentFilters) as [keyof Filters, string|[]][])
+          .every(([key, filterValues]) => {
 
-          if (!filtervalues || filtervalues.length === 0) return true;
+          if (!filterValues || filterValues.length === 0) return true;
 
           let value: string;
 
@@ -67,18 +71,37 @@ export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :Svel
                   return true;
           }
 
-          return (filtervalues as string[]).includes(value);
+          return (filterValues as string[]).includes(value);
       });
     });
 
     return new SvelteMap(filtered);
 }
 
-export const createProcessDescriptionFilter = () => {
+export const onTimeFilterChange = (value: Date[]) => {
+  timeFilterValue.length = 0; 
+  timeFilterValue.push(...value.sort((a, b) => a.getTime() - b.getTime()));
+}
+
+export const createDynamicFilters = () => {
+  createTimeFilter();
+  createProcessDescriptionFilter();
+}
+
+const createProcessDescriptionFilter = () => {
   for (const description of $state.snapshot(processDescriptions)) {
     processDescriptionFilter.push({
       value: description,
       label: description
     });
+  }
+}
+
+const createTimeFilter = () => {
+  for (const time of $state.snapshot(boundariesFormatted())) {
+    timeFilter.push({
+      value: time,
+      label: formatDate(time)
+    })
   }
 }

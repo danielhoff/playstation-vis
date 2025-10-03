@@ -4,7 +4,7 @@ import metricsJson from '$lib/data/metrics.json';
 import groupsJson from '$lib/data/groups.json';
 import { julianToDate } from '$lib/utils/julianToDate';
 import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription} from '$lib/types.ts';
-import { createProcessDescriptionFilter } from './chartFilters.svelte';
+
 
 // makes all 3 possible to grab the data like metricsData[0] rather than metricsData.metrics[0]
 export const boundariesData = $state<Boundaries>(boundariesJson.boundaries);
@@ -51,6 +51,7 @@ export const colorsDark:Colors = {
 export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] => {
     const points: Point[] = [];
 
+
     for (const metric of metrics) {
         const { start, end, component, group, data} = metric;
         const relatedGroup = groupsMap.get(group);
@@ -63,9 +64,7 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
 
         data.forEach((value, i) => {
             // if outside the metrics start/end time, don't plot
-            if (i < start || i > end) {
-                return false;
-            }
+            if (i < start || i > end) return false;
 
             points.push({
                 boundary: boundaries[i],
@@ -76,8 +75,6 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
             });
         })
     }
-
-    createProcessDescriptionFilter();
     return points;
 }
 

@@ -4,7 +4,7 @@
     import type { BoundariesFormatted, Metric, Point, Theme, Colors, MetaData, Group } from '$lib/types';
     import { getTheme } from '$lib/stores/theme.svelte';
     import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, flattenGroupedPoints} from '$lib/stores/chart.svelte';
-    import { filteredGroupedPoints } from '$lib/stores/chartFilters.svelte';
+    import { filteredGroupedPoints, createDynamicFilters, timeFilterValue } from '$lib/stores/chartFilters.svelte';
     import ChartFilters from '$lib/components/ChartFilters.svelte';
     import { formatDate } from '$lib/utils/formatDate';
 
@@ -20,6 +20,8 @@
     }
 
     let points = generatePoints(metricsData, boundaries);
+
+    createDynamicFilters();
 
     // groups the points into lines: label is - (metric.component-metric.group)
     let groupedPoints = d3.rollup(points, value => value, d => d.label);
@@ -58,7 +60,9 @@
         const marginLeft:number = 100;
 
         const x:d3.ScaleTime<number, number> = d3.scaleUtc()
-            .domain(d3.extent(boundaries) as [Date, Date])
+            .domain(
+                timeFilterValue && timeFilterValue.length === 2 ? (timeFilterValue as [Date, Date])
+                : d3.extent(boundaries) as [Date, Date])
             .range([marginLeft, width - marginRight]);
 
         // needs the extra check to failsafe to a number
@@ -88,11 +92,8 @@
             p => y(p.value)
         );
 
-        // undefined for first pass
-        let lastIndex:number|undefined;
-
         svg = d3.select<SVGSVGElement, unknown>('#line-chart')
-            .on('mousemove', (event: MouseEvent) => onMouseMove(event, x, y, delaunay, lastIndex))
+            .on('mousemove', (event: MouseEvent) => onMouseMove(event, x, y, delaunay))
             .on('mouseenter', onMouseEnter)
             .on('mouseleave', onMouseLeave);
 
@@ -160,7 +161,7 @@
         dot.attr('display', 'none');
     }
 
-    const onMouseMove = (event: MouseEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>, delaunay:d3.Delaunay<number>, lastIndex:number|undefined) => {
+    const onMouseMove = (event: MouseEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>, delaunay:d3.Delaunay<number>) => {
         const [xm, ym] = d3.pointer(event);
 
         const index = delaunay.find(xm, ym);
@@ -198,12 +199,22 @@
                 .ease(d3.easeLinear)
                 .attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
 
-            dot.select("text").text(`${selectedPoint.label} [${friendlyDate}, ${selectedPoint.value}]`);
+            dot.select('text').text(`${selectedPoint.label} [${friendlyDate}, ${selectedPoint.value}]`);
         }
     }
 
     const filterChart = () => {
-        groupedPoints = d3.rollup(points, value => value, d => d.label);
+        const timeFilter:Date[] = $state.snapshot(timeFilterValue);
+        const timeFilterActive = timeFilter.length === 2;
+        let filteredPoints:Point[] = points;
+
+        if (timeFilterActive) {
+                filteredPoints = points.filter(
+                (p) => p.boundary >= timeFilter[0] && p.boundary <= timeFilter[1]
+            );
+        }
+
+        groupedPoints =  d3.rollup(timeFilterActive ? filteredPoints : points, value => value, d => d.label);
         groupedPoints = filteredGroupedPoints(groupedPoints);
         groupedPointsFlat = flattenGroupedPoints(groupedPoints);
         redrawChart();

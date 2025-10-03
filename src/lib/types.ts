@@ -4,7 +4,7 @@ export type GlobalDescription = 'memory' | 'cpu' | 'network';
 export type Kind = 'global' | 'process';
 export type SymbolId = 'triangle' | 'square' | 'circle' | 'cross';
 export type OKLCHFormat = `oklch(${number}% ${number} ${number})`;
-export type FormattedDate = string & { __brand: "FormattedDate" };
+export type UserFormattedDate = string & { __brand: "UserFormattedDate" };
 
 export type Boundaries = number[];
 export type BoundariesFormatted = Date[];
@@ -35,7 +35,7 @@ export type Point = {
 };
 
 export type FilterOption = {
-  value: string;
+  value: string|Date;
   label: string;
 }
 
@@ -50,5 +50,5 @@ export type MetaData = {
   group: Group,
   value: number,
   component: Component,
-  time: FormattedDate
+  time: UserFormattedDate
 }

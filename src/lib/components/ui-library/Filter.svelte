@@ -6,6 +6,7 @@
         options: FilterOption[];
         multiple?: boolean;
         searchable?: boolean;
+        max?: number;
         onChangeEvent: (value:Array<string>) => void;
     }
 
@@ -13,6 +14,7 @@
         options = [],
         multiple = true,
         searchable = true,
+        max = 0,
         onChangeEvent
     }: Props = $props();
 
@@ -23,4 +25,4 @@
     }
 </script>
 
-<Svelecte onChange={handleChange} options={options} searchable={searchable}  multiple={multiple} closeAfterSelect={true} bind:value={value}></Svelecte>
+<Svelecte onChange={handleChange} options={options} searchable={searchable}  multiple={multiple} closeAfterSelect={true} max={max} bind:value={value}></Svelecte>
