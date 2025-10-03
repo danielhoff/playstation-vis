@@ -12,6 +12,9 @@ export const filters = $state<Filters>({
 
 export const timeFilter:Array<FilterOption> = [];
 export const timeFilterValue = $state<Date[]>([]);
+export const timeFilterActive = (): boolean => {
+  return $state.snapshot(timeFilterValue).length === 2;
+}
 
 export const kindFilter:Array<FilterOption> = [
   { value: 'global', label: 'Global' },
@@ -36,6 +39,14 @@ export const descriptionFilter:Array<FilterOption> = [
 ]
 
 export const processDescriptionFilter:Array<FilterOption> = [];
+
+export const filterPointsTime = (points:Point[]):Point[]|[] => {
+  const timeFilter = $state.snapshot(timeFilterValue);
+  console.log('hi');
+  return points.filter(
+    (p) => p.boundary >= timeFilter[0] && p.boundary <= timeFilter[1]
+  );
+}
 
 // filters - cascading filtering 
 export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :SvelteMap<string,Point[]> => {

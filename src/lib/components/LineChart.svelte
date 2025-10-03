@@ -4,7 +4,7 @@
     import type { BoundariesFormatted, Metric, Point, Theme, Colors, MetaData, Group } from '$lib/types';
     import { getTheme } from '$lib/stores/theme.svelte';
     import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, flattenGroupedPoints} from '$lib/stores/chart.svelte';
-    import { filteredGroupedPoints, createDynamicFilters, timeFilterValue } from '$lib/stores/chartFilters.svelte';
+    import { filteredGroupedPoints, createDynamicFilters, timeFilterValue, timeFilterActive, filterPointsTime } from '$lib/stores/chartFilters.svelte';
     import ChartFilters from '$lib/components/ChartFilters.svelte';
     import { formatDate } from '$lib/utils/formatDate';
 
@@ -61,7 +61,7 @@
 
         const x:d3.ScaleTime<number, number> = d3.scaleUtc()
             .domain(
-                timeFilterValue && timeFilterValue.length === 2 ? (timeFilterValue as [Date, Date])
+                timeFilterValue && timeFilterActive() ? (timeFilterValue as [Date, Date])
                 : d3.extent(boundaries) as [Date, Date])
             .range([marginLeft, width - marginRight]);
 
@@ -204,17 +204,12 @@
     }
 
     const filterChart = () => {
-        const timeFilter:Date[] = $state.snapshot(timeFilterValue);
-        const timeFilterActive = timeFilter.length === 2;
         let filteredPoints:Point[] = points;
-
-        if (timeFilterActive) {
-                filteredPoints = points.filter(
-                (p) => p.boundary >= timeFilter[0] && p.boundary <= timeFilter[1]
-            );
+        if (timeFilterActive()) {
+            filteredPoints = filterPointsTime(filteredPoints);
         }
 
-        groupedPoints =  d3.rollup(timeFilterActive ? filteredPoints : points, value => value, d => d.label);
+        groupedPoints =  d3.rollup(filteredPoints, value => value, d => d.label);
         groupedPoints = filteredGroupedPoints(groupedPoints);
         groupedPointsFlat = flattenGroupedPoints(groupedPoints);
         redrawChart();
