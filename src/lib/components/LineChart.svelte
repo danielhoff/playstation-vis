@@ -25,12 +25,12 @@
 
     // groups the points into lines: label is - (metric.component-metric.group)
     let groupedPoints = d3.rollup(points, value => value, d => d.label);
-    let groupedPointsFlat:Point[] = flattenGroupedPoints(groupedPoints);
+    let groupedPointsFlat:Point[] = $state(flattenGroupedPoints(groupedPoints));
 
     let svg:d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
     let dot:d3.Selection<SVGGElement, unknown, HTMLElement, undefined>;
 
-    let meta:MetaData;
+    let meta:MetaData | undefined = $state();
 
     onMount(() => {
         drawChart();
