@@ -222,19 +222,18 @@
 
 </script>
 
-<div id="chart-container" class="h-[70%]">
-    <!-- <Button onClick={handleClick} label="Filter test"></Button> -->
+<div id="chart-container" class="h-[70%] md:h-[50%]">
     <svg id="line-chart"></svg>
 </div>
 <hr />
-<div class="chart-helpers p-(--space-md) flex">
+<div class="chart-helpers p-(--space-md) flex h-[30%] md:h-[50%]">
     <div class="filters w-1/2 pr-(--space-md) border-r-(--border)">
         <ChartFilters onFilterChange={filterChart}></ChartFilters>
     </div>
     <div class="meta w-1/2 pl-(--space-md)">
         <h3 class="mb-(--space-sm)">Meta</h3>
         <div class="flex gap-5">
-            <div class="flex-1">
+            <div class="flex-1 w-[70%]">
                 <p><span>Date/Time:</span> {meta?.time}</p>
                 <p><span>Value:</span> {meta?.value}</p>
                 <p><span>Description:</span> {meta?.group.description}</p>
