@@ -3,9 +3,10 @@
     import { onMount } from "svelte";
     import type { BoundariesFormatted, Metric, Point, Theme, Colors, GlobalDescription } from '$lib/types';
     import { getTheme } from '$lib/stores/theme.svelte';
-    import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, filteredGroupedPoints} from '$lib/stores/data.svelte';
+    import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, flattenGroupedPoints} from '$lib/stores/chart.svelte';
+    import { filteredGroupedPoints } from '$lib/stores/chartFilters.svelte';
     import Button from './ui-library/Button.svelte';
-    import ChartFilters from './ChartFilters.svelte';
+    import ChartFilters from '$lib/components/ChartFilters.svelte';
 
     const boundaries:BoundariesFormatted = boundariesFormatted();
 
@@ -22,9 +23,8 @@
 
     // groups the points into lines: label is - (metric.component-metric.group)
     let groupedPoints = d3.rollup(points, value => value, d => d.label);
+    let groupedPointsFlat:Point[] = flattenGroupedPoints(groupedPoints);
 
-    // $inspect(groupedPoints);
-    
     let svg:d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
     let dot:d3.Selection<SVGGElement, unknown, HTMLElement, undefined>;
 
@@ -38,6 +38,10 @@
 
     const redrawChart = () => {
         d3.selectAll('#line-chart *').remove();
+        d3.select('#line-chart')
+            .on('mousemove', null)
+            .on('mouseenter', null)
+            .on('mouseleave', null);
         drawChart();
     }
 
@@ -75,10 +79,20 @@
     }
 
     const drawSVG = (width:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
+        
+        const delaunay = d3.Delaunay.from(
+            groupedPointsFlat,
+            p => x(p.boundary),
+            p => y(p.value)
+        );
+
+        // undefined for first pass
+        let lastIndex:number|undefined;
+
         svg = d3.select<SVGSVGElement, unknown>('#line-chart')
-            // .on('pointermove', (event: PointerEvent) => onMouseMove(event, x, y))
-            .on('pointerenter', onMouseEnter)
-            .on('pointerleave', onMouseLeave);
+            .on('mousemove', (event: MouseEvent) => onMouseMove(event, x, y, delaunay, lastIndex))
+            .on('mouseenter', onMouseEnter)
+            .on('mouseleave', onMouseLeave);
 
         dot = svg.append('g')
             .attr('display', 'none');
@@ -144,30 +158,43 @@
         dot.attr('display', 'none');
     }
 
-    // const onMouseMove = (event: PointerEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
-    //     const [xm, ym] = d3.pointer(event);
+    const onMouseMove = (event: MouseEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>, delaunay:d3.Delaunay<number>, lastIndex:number|undefined) => {
+        const [xm, ym] = d3.pointer(event);
 
-    //     const i = d3.leastIndex(points, p => 
-    //         Math.hypot(x(p.boundary) - xm, y(p.value) - ym));
-            
-    //     // TS guard against undefined
-    //     if (i === undefined) return;
+        lastIndex = delaunay.find(xm, ym, lastIndex);
 
-    //     const selectedPoint = points[i];
+        const selectedPoint = groupedPointsFlat[lastIndex];
 
-    //     svg.selectAll<SVGPathElement, Point[]>('.data-line')
-    //         // can use [0] here to get the label as all points on a line have the same label
-    //         .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
-    //         .filter(d => d[0].label === selectedPoint.label)
-    //         .raise();
+        // pixel x and y value for nearest point
+        const px = x(selectedPoint.boundary); 
+        const py = y(selectedPoint.value);
 
-    //     dot.attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
-    //     dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
-    // }
+        // distance of cursor to px py
+        const dx = px - xm;
+        const dy = py - ym;
+        const radiusSq = 50 * 50;
+
+        // if in radius then show label etc
+        if (dx*dx + dy*dy <= radiusSq) {
+            svg.selectAll<SVGPathElement, Point[]>('.data-line')
+            // can use [0] here to get the label as all points on a line have the same label
+            .style('opacity', d => d[0].label === selectedPoint.label ? '1' : '0.1')
+            .filter(d => d[0].label === selectedPoint.label)
+            .raise();
+
+            dot.transition()
+                .duration(10)
+                .ease(d3.easeLinear)
+                .attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
+
+            dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
+        }
+    }
 
     const filterChart = () => {
         groupedPoints = d3.rollup(points, value => value, d => d.label);
         groupedPoints = filteredGroupedPoints(groupedPoints);
+        groupedPointsFlat = flattenGroupedPoints(groupedPoints);
         redrawChart();
     }
 

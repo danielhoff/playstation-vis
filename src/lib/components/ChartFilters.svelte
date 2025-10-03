@@ -1,7 +1,7 @@
 <script lang="ts">
     import Filter from "./ui-library/Filter.svelte";
     import type { Kind, Component, Filters, GlobalDescription } from "$lib/types";
-    import { kindFilter, componentFilter, descriptionFilter, processDescriptionFilter, filters } from "$lib/stores/data.svelte";
+    import { kindFilter, componentFilter, descriptionFilter, processDescriptionFilter, filters } from "$lib/stores/chartFilters.svelte";
 
     interface Props {
         onFilterChange: () => void;
@@ -49,5 +49,5 @@
             <p>Description(Global):</p>
         </div>
         <Filter onChangeEvent={(value) => updateFilters(value as GlobalDescription[], 'description')} options={descriptionFilter}></Filter>
-    </div>    
+    </div>
 </div>
