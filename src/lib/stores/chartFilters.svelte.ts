@@ -49,7 +49,7 @@ export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :Svel
         // this keeps TS happy
         if (!relatedGroup) return false;
 
-        return (Object.entries(currentFilters) as [keyof Filters, string|[]][])
+        return (Object.entries(currentFilters) as [keyof Filters, string[]][])
           .every(([key, filterValues]) => {
 
           if (!filterValues || filterValues.length === 0) return true;

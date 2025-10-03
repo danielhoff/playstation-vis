@@ -78,13 +78,13 @@
             .x(d => x(d.boundary))
             .y(d => y(d.value));
 
-        drawSVG(width, x, y);
+        drawSVG(width, height, x, y);
         drawXAxis(x, width, height, marginBottom);
         drawYAxis(y, marginLeft);
         drawLines(line);
     }
 
-    const drawSVG = (width:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
+    const drawSVG = (width:number, height:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
         
         const delaunay = d3.Delaunay.from(
             groupedPointsFlat,
@@ -108,7 +108,7 @@
             .attr('y', -8);
         
         svg.attr('width', width)
-            .attr('height', '100%')
+            .attr('height', height)
             .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px')
     }
 
