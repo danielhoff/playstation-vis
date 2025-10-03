@@ -1,12 +1,12 @@
 <script lang="ts">
     import * as d3 from 'd3';
     import { onMount } from "svelte";
-    import type { BoundariesFormatted, Metric, Point, Theme, Colors, GlobalDescription } from '$lib/types';
+    import type { BoundariesFormatted, Metric, Point, Theme, Colors, MetaData, Group } from '$lib/types';
     import { getTheme } from '$lib/stores/theme.svelte';
     import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, flattenGroupedPoints} from '$lib/stores/chart.svelte';
     import { filteredGroupedPoints } from '$lib/stores/chartFilters.svelte';
-    import Button from './ui-library/Button.svelte';
     import ChartFilters from '$lib/components/ChartFilters.svelte';
+    import { formatDate } from '$lib/utils/formatDate';
 
     const boundaries:BoundariesFormatted = boundariesFormatted();
 
@@ -27,6 +27,8 @@
 
     let svg:d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
     let dot:d3.Selection<SVGGElement, unknown, HTMLElement, undefined>;
+
+    let meta:MetaData;
 
     onMount(() => {
         drawChart();
@@ -106,18 +108,18 @@
         
         svg.attr('width', width)
             .attr('height', '100%')
-            .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;')
+            .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px')
     }
 
     const drawXAxis = (x:d3.ScaleTime<number,number>, width:number, height:number, marginBottom:number) => {
-         // x axis
+        // x axis
         svg.append('g')
             .attr('transform', `translate(0, ${height - marginBottom})`)
             .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
     }
 
     const drawYAxis = (y:d3.ScaleLinear<number,number>, marginLeft:number) => {
-         // y axis
+        // y axis
         svg.append('g')
             .attr('transform', `translate(${marginLeft}, 0)`)
             .call(d3.axisLeft(y));
@@ -161,9 +163,9 @@
     const onMouseMove = (event: MouseEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>, delaunay:d3.Delaunay<number>, lastIndex:number|undefined) => {
         const [xm, ym] = d3.pointer(event);
 
-        lastIndex = delaunay.find(xm, ym, lastIndex);
+        const index = delaunay.find(xm, ym);
 
-        const selectedPoint = groupedPointsFlat[lastIndex];
+        const selectedPoint = groupedPointsFlat[index];
 
         // pixel x and y value for nearest point
         const px = x(selectedPoint.boundary); 
@@ -172,7 +174,7 @@
         // distance of cursor to px py
         const dx = px - xm;
         const dy = py - ym;
-        const radiusSq = 50 * 50;
+        const radiusSq = 200 * 200;
 
         // if in radius then show label etc
         if (dx*dx + dy*dy <= radiusSq) {
@@ -182,12 +184,21 @@
             .filter(d => d[0].label === selectedPoint.label)
             .raise();
 
+            const friendlyDate = formatDate(selectedPoint.boundary);
+
+            meta = {
+                group: groupsMap.get(selectedPoint.groupId) as Group,
+                time: friendlyDate,
+                component: selectedPoint.component,
+                value: selectedPoint.value
+            }
+
             dot.transition()
                 .duration(10)
                 .ease(d3.easeLinear)
                 .attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
 
-            dot.select("text").text(`${selectedPoint.label} [${selectedPoint.boundary}, ${selectedPoint.value}]`);
+            dot.select("text").text(`${selectedPoint.label} [${friendlyDate}, ${selectedPoint.value}]`);
         }
     }
 
@@ -210,7 +221,20 @@
         <ChartFilters onFilterChange={filterChart}></ChartFilters>
     </div>
     <div class="meta w-1/2 pl-(--space-md)">
-        <h3>Meta</h3>
-        <!-- <ChartFilters onFilterChange={filterChart}></ChartFilters> -->
+        <h3 class="mb-(--space-sm)">Meta</h3>
+        <div class="flex gap-5">
+            <div class="flex-1">
+                <p><span>Date/Time:</span> {meta?.time}</p>
+                <p><span>Value:</span> {meta?.value}</p>
+                <p><span>Description:</span> {meta?.group.description}</p>
+                <p><span>Kind:</span> {meta?.group.kind}</p>
+                <p><span>Component:</span> {meta?.component}</p>
+            </div>
+            <div class="flex-1">
+                <p><span>CPU:</span> 20 CPU cores</p>
+                <p><span>Memory:</span> 64GB</p>
+                <p><span>Total amount of Data Points:</span>{groupedPointsFlat.length}</p>
+            </div>
+        </div>
     </div>
 </div>

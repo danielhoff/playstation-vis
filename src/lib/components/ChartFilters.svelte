@@ -19,34 +19,34 @@
 
 <h3>Filters</h3>
 
-<div class="flex mt-(--space-sm)">
+<div class="flex mt-(--space-sm) gap-5">
     <div class="w-1/2">
         <div class="w-1/3">
-            <p>Kind:</p>
+            <p><span>Kind:</span></p>
         </div>
         
         <Filter onChangeEvent={(value) => updateFilters(value as Kind[], 'kind')} options={kindFilter}></Filter>    
     </div>
     <div class="w-1/2">
         <div class="w-1/3">
-            <p>Component:</p>
+            <p><span>Component:</span></p>
         </div>
     
         <Filter onChangeEvent={(value) => updateFilters(value as Component[], 'component')} options={componentFilter}></Filter>
     </div>
 </div>
 
-<div class="flex mt-(--space-sm)">
+<div class="flex mt-(--space-sm) gap-5">
     <div class="w-1/2">
         <div class="w-1/3">
-            <p>Description(Process):</p>
+            <p><span>Description (Process):</span></p>
         </div>
         <Filter onChangeEvent={(value) => updateFilters(value as string[], 'processDescription')} options={processDescriptionFilter}></Filter>
     </div>
     
     <div class="w-1/2">
         <div class="w-1/3">
-            <p>Description(Global):</p>
+            <p><span>Description (Global):</span></p>
         </div>
         <Filter onChangeEvent={(value) => updateFilters(value as GlobalDescription[], 'description')} options={descriptionFilter}></Filter>
     </div>

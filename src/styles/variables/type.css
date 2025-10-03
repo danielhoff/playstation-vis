@@ -6,6 +6,10 @@
     --btn-text-lg: 1.1rem;
 }
 
+text {
+    font-family: var(--font-space-mono);
+}
+
 h1 {
     color: var(--font-color-heading-primary);
     font-size: 3rem;
@@ -19,4 +23,12 @@ h2 {
 h3 {
     color: var(--font-color-heading-tertiary);
     font-size: 1.5rem;
-  }
+}
+
+p {
+    color: var(--font-color-dark);
+}
+
+p > span {
+    color: var(--font-color-hightlight)
+}

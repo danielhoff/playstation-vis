@@ -20,6 +20,8 @@
     --font-color-dark: var(--color-ps-grey-600);
     --font-color-dark-hover: var(--color-ps-grey-800);
 
+    --font-color-hightlight: var(--color-ps-blue);
+
     --font-color-heading-primary: var(--color-ps-blue-500);
     --font-color-heading-secondary: var(--color-ps-green-700);
     --font-color-heading-tertiary: var(--color-ps-pink-700);
