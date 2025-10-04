@@ -30,7 +30,6 @@
         setColors();
         drawChart();
         
-
         window.addEventListener('resize', () => {
             redrawChart();
         });
@@ -51,8 +50,6 @@
         setColors();
         redrawChart();
     });
-
-    
 
     const drawChart = () => {
         const container = d3.select('#chart-container').node() as HTMLElement;
@@ -87,6 +84,7 @@
         drawXAxis(x, width, height, marginBottom);
         drawYAxis(y, marginLeft);
         drawLines(line);
+        drawLegend(width, marginTop);
     }
 
     const drawSVG = (width:number, height:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
@@ -110,7 +108,6 @@
         
         dot.append('text')
             .attr('text-anchor', 'middle')
-            .attr('fill', 'var(--font-color-dark)')
             .style('font-size', '10px')
             .attr('y', -8);
         
@@ -148,6 +145,33 @@
             .attr('class', 'data-line')
             .attr('d', line);
     }
+
+    const drawLegend = (width:number, marginTop:number) => {
+        const entries = Object.entries(colors);
+
+        const legend = svg.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${width - 100}, ${marginTop})`);
+
+        const legendItem = legend.selectAll('.legend-item')
+            .data(entries)
+            .enter()
+            .append('g')
+            .attr('class', 'legend-item')
+            .attr('transform', (_, i) => `translate(0, ${i * 20})`);
+
+        legendItem.append('rect')
+            .attr('width', 14)
+            .attr('height', 14)
+            .attr('fill', ([, color]) => color);
+
+        legendItem.append('text')
+            .attr('x', 20)
+            .attr('y', 7)
+            .style('font-size', '12px')
+            .style('dominant-baseline', 'middle')
+            .text(([key]) => key);
+    };
 
     const getContainerWidth = (container:HTMLElement):number => {
         return container.offsetWidth;
