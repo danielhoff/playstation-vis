@@ -7,4 +7,15 @@
     border: var(--border);
     margin-bottom: 1rem;
   }
+
+  .x-axis path,
+.x-axis line {
+  stroke: var(--font-color-dark);
+}
+
+ .y-axis path,
+.y-axis line {
+  stroke: var(--font-color-dark);
+}
+
 }

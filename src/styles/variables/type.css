@@ -8,6 +8,7 @@
 
 text {
     font-family: var(--font-space-mono);
+    color: var(--font-color-dark);
 }
 
 h1 {

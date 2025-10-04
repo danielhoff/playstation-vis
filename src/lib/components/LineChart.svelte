@@ -105,17 +105,19 @@
         
         dot.append('text')
             .attr('text-anchor', 'middle')
+            .attr('fill', 'var(--font-color-dark)')
+            .style('font-size', '10px')
             .attr('y', -8);
         
         svg.attr('width', width)
             .attr('height', height)
-            .attr('style', 'max-width: 100%; height: auto; overflow: visible; font: 10px')
     }
 
     const drawXAxis = (x:d3.ScaleTime<number,number>, width:number, height:number, marginBottom:number) => {
         // x axis
-        svg.append('g')
+        svg.append('g') 
             .attr('transform', `translate(0, ${height - marginBottom})`)
+            .attr('class', 'x-axis')
             .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
     }
 
@@ -123,6 +125,7 @@
         // y axis
         svg.append('g')
             .attr('transform', `translate(${marginLeft}, 0)`)
+            .attr('class', 'y-axis')
             .call(d3.axisLeft(y));
     }
 
@@ -197,9 +200,11 @@
             dot.transition()
                 .duration(10)
                 .ease(d3.easeLinear)
+                .attr('fill', getLineColor(selectedPoint, colors))
                 .attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
 
-            dot.select('text').text(`${selectedPoint.label} [${friendlyDate}, ${selectedPoint.value}]`);
+            dot.select('text')
+                .text(`${selectedPoint.label} [${friendlyDate}, ${selectedPoint.value}]`);
         }
     }
 
@@ -217,11 +222,11 @@
 
 </script>
 
-<div id="chart-container" class="h-[70%] md:h-[50%]">
+<div id="chart-container" class="2xl:h-[70%] lg:h-[60%]">
     <svg id="line-chart"></svg>
 </div>
 <hr />
-<div class="chart-helpers p-(--space-md) flex h-[30%] md:h-[50%]">
+<div class="chart-helpers p-(--space-md) flex 2xl:h-[30%] lg:h-[40%]">
     <div class="filters w-1/2 pr-(--space-md) border-r-(--border)">
         <ChartFilters onFilterChange={filterChart}></ChartFilters>
     </div>
