@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as d3 from 'd3';
     import { onMount } from "svelte";
-    import type { BoundariesFormatted, Metric, Point, Theme, Colors, MetaData, Group } from '$lib/types';
+    import type { BoundariesFormatted, Point, Theme, Colors, MetaData, Group } from '$lib/types';
     import { getTheme } from '$lib/stores/theme.svelte';
     import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, flattenGroupedPoints} from '$lib/stores/chart.svelte';
     import { filteredGroupedPoints, createDynamicFilters, timeFilterValue, timeFilterActive, filterPointsTime } from '$lib/stores/chartFilters.svelte';
@@ -11,14 +11,7 @@
 
     const boundaries:BoundariesFormatted = boundariesFormatted();
 
-    const theme:Theme = getTheme();
     let colors:Colors;
-
-    if (theme === 'light') {
-        colors = colorsLight;
-    } else {
-        colors = colorsDark;
-    }
 
     let points = generatePoints(metricsData, boundaries);
 
@@ -34,7 +27,9 @@
     let meta:MetaData | undefined = $state();
 
     onMount(() => {
+        setColors();
         drawChart();
+        
 
         window.addEventListener('resize', () => {
             redrawChart();
@@ -49,6 +44,15 @@
             .on('mouseleave', null);
         drawChart();
     }
+
+    // this gets called when the theme variable changes 'light' | 'dark'
+    $effect(() => {
+        getTheme();
+        setColors();
+        redrawChart();
+    });
+
+    
 
     const drawChart = () => {
         const container = d3.select('#chart-container').node() as HTMLElement;
@@ -219,6 +223,14 @@
         groupedPoints = filteredGroupedPoints(groupedPoints);
         groupedPointsFlat = flattenGroupedPoints(groupedPoints);
         redrawChart();
+    }
+
+    const setColors = () => {
+         if (getTheme() === 'light') {
+            colors = colorsLight;
+        } else {
+            colors = colorsDark;
+        }
     }
 
 </script>

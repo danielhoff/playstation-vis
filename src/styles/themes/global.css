@@ -1,6 +1,7 @@
 @layer base {
   html {
     font-family: var(--font-space-mono);
+    color: var(--font-color-dark)
   }
 
   hr {
@@ -9,13 +10,13 @@
   }
 
   .x-axis path,
-.x-axis line {
-  stroke: var(--font-color-dark);
-}
+  .x-axis line {
+    stroke: var(--font-color-dark);
+  }
 
- .y-axis path,
-.y-axis line {
-  stroke: var(--font-color-dark);
-}
+  .y-axis path,
+  .y-axis line {
+    stroke: var(--font-color-dark);
+  }
 
 }

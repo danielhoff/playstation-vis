@@ -33,14 +33,6 @@
                 <p>Paragraph</p>
                 <p><span>Highlight</span></p>
             </div>
-            
-            <div class="w-1/3 flex-1">
-                
-            </div>
-
-            <div class="w-1/3 flex-1">
-                
-            </div>
         </div>
         <hr>
         <h2>Buttons</h2>

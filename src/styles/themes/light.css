@@ -26,7 +26,6 @@
     --font-color-heading-secondary: var(--color-ps-green-700);
     --font-color-heading-tertiary: var(--color-ps-pink-700);
 
-    
-
-
+    --sv-bg: var(--color-ps-grey-200);
+    --sv-placeholder-color: var(--color-ps-grey-600);
 }

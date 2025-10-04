@@ -41,10 +41,10 @@ export const colorsLight:Colors = {
 
 // dark theme
 export const colorsDark:Colors = {
-  memory: 'oklch(42.392% 0.20821 269.97)',
-  cpu: 'oklch(72.061% 0.11854 190.64)',
-  network: 'oklch(56.295% 0.22634 27.822)',
-  process: 'oklch(63.9% 0.22675 356.89)',
+  memory: 'oklch(72.25% 0.10763 279.19)',
+  cpu: 'oklch(87.861% 0.08834 192.1)',
+  network: 'oklch(74.792% 0.14004 18.277)',
+  process: 'oklch(82.448% 0.10005 348.83)',
 }
 
 // returns an array of points to map to the chart
