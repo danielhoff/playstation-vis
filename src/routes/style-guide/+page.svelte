@@ -13,10 +13,39 @@
 
 <Container>
     <div class="p-(--space-lg)">
-        <h1>Style Guide</h1>
+        <div class="flex">
+            <h1 class="flex-grow">Style Guide</h1>
+            <div class="mt-[8px]">
+                <a href="/">
+                    <Button type="secondary" label="Home"></Button>
+                </a>
+            </div>
+        </div>
+        
+        <hr>
+        <h2>Typography</h2>
+        <hr>
+        <div class="flex mb-(--space-md)">
+            <div class="w-1/3 flex-1">
+                <h1>Title</h1>
+                <h2>Heading</h2>
+                <h3>Sub Heading</h3>
+                <p>Paragraph</p>
+                <p><span>Highlight</span></p>
+            </div>
+            
+            <div class="w-1/3 flex-1">
+                
+            </div>
+
+            <div class="w-1/3 flex-1">
+                
+            </div>
+        </div>
         <hr>
         <h2>Buttons</h2>
-        <div class="flex">
+        <hr>
+        <div class="flex mb-(--space-md)">
             <div class="w-1/3 flex-1">
                 <Button label="Primary Small" size="sm"></Button> 
                 <Button label="Secondary Small" size="sm" type="secondary"></Button>
@@ -37,6 +66,9 @@
         </div>
         <hr>
         <h2>Filters</h2>
+        <hr>
+        <div class="w-1/4">
             <Filter onChangeEvent={onChange} options="{options}"></Filter>
+        </div> 
     </div>
 </Container>

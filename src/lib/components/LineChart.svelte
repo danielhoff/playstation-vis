@@ -6,6 +6,7 @@
     import { metricsData, groupsMap, boundariesFormatted, generatePoints, colorsDark, colorsLight, getLineColor, flattenGroupedPoints} from '$lib/stores/chart.svelte';
     import { filteredGroupedPoints, createDynamicFilters, timeFilterValue, timeFilterActive, filterPointsTime } from '$lib/stores/chartFilters.svelte';
     import ChartFilters from '$lib/components/ChartFilters.svelte';
+    import Button from '$lib/components/ui-library/Button.svelte';
     import { formatDate } from '$lib/utils/formatDate';
 
     const boundaries:BoundariesFormatted = boundariesFormatted();
@@ -244,7 +245,13 @@
                 <p><span>CPU:</span> 20 CPU cores</p>
                 <p><span>Memory:</span> 64GB</p>
                 <p><span>Total amount of Data Points:</span>{groupedPointsFlat.length}</p>
+                <div class="mt-(--space-md)">
+                    <a href="/style-guide">
+                        <Button type="secondary" label="Style Guide"></Button>
+                    </a>
+                </div>
             </div>
         </div>
+        
     </div>
 </div>
