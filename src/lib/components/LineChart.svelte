@@ -202,6 +202,8 @@
             .style('opacity', 1);
         
         dot.attr('display', 'none');
+        //clear meta data
+        meta = undefined;
     }
 
     const onMouseMove = (event: MouseEvent, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>, delaunay:d3.Delaunay<number>) => {
