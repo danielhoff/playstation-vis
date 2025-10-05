@@ -10,7 +10,7 @@ Then run:
 npm install
 ```
 
-## Developing
+## Run the project locally
 
 ```sh
 npm run dev
