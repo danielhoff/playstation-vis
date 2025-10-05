@@ -285,6 +285,8 @@
                 <p><span>Component:</span> {meta?.component}</p>
             </div>
             <div class="flex-1">
+                <p><span>X Axis:</span> Time</p>
+                <p><span>Y Axis:</span> Value</p>
                 <p><span>CPU:</span> 20 CPU cores</p>
                 <p><span>Memory:</span> 64GB</p>
                 <p><span>Total amount of Data Points:</span>{groupedPointsFlat.length}</p>
