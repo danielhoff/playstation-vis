@@ -3,7 +3,7 @@ import boundariesJson from '$lib/data/boundaries.json';
 import metricsJson from '$lib/data/metrics.json';
 import groupsJson from '$lib/data/groups.json';
 import { julianToDate } from '$lib/utils/julianToDate';
-import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription} from '$lib/types.ts';
+import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, Colors, OKLCHFormat, GlobalDescription, Component} from '$lib/types.ts';
 
 
 // makes all 3 possible to grab the data like metricsData[0] rather than metricsData.metrics[0]
@@ -86,7 +86,25 @@ export const getLineColor = (point: Point, colors: Colors) :OKLCHFormat => {
     if (kind === 'global') {
         return colors[description as GlobalDescription];
     } else {
-        return colors.process;
+        switch(point.component as Component) {
+          case 'in use':
+          case 'modified':
+          case 'standby':
+          case 'free':
+            return colors['memory'];
+
+          case 'user':
+          case 'kernel':
+            return colors['cpu'];
+
+          case 'sent':
+          case 'received':
+            return colors['network'];
+
+          default:
+            return colors.process;
+        }
+       
     }
 }
 
