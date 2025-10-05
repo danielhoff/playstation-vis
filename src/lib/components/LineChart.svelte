@@ -156,7 +156,7 @@
 
         const legend = svg.append('g')
             .attr('class', 'legend')
-            .attr('transform', `translate(${width - 100}, ${marginTop})`);
+            .attr('transform', `translate(${width - 200}, ${marginTop})`);
 
         const legendItem = legend.selectAll('.legend-item')
             .data(entries)
@@ -175,7 +175,13 @@
             .attr('y', 7)
             .style('font-size', '12px')
             .style('dominant-baseline', 'middle')
-            .text(([key]) => key);
+            .text(([key]) => {
+                if (key === 'process') {
+                    return 'process(uncategorised)'
+                }
+
+                return key;
+            });
     };
 
     const getContainerWidth = (container:HTMLElement):number => {
@@ -238,7 +244,7 @@
                 .attr('transform', `translate(${x(selectedPoint.boundary)}, ${y(selectedPoint.value)})`);
 
             dot.select('text')
-                .text(`${selectedPoint.label} [${friendlyDate}, ${selectedPoint.value}]`);
+                .text(`${selectedPoint.component} [${friendlyDate}, ${selectedPoint.value}]`);
         }
     }
 
