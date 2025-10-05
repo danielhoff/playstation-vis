@@ -13,7 +13,7 @@
         cancelAnimation = false;
     }
 
-    const handleClick = (event: MouseEvent) => {
+    const handleClick = () => {
         cancelAnimation = true;
         toggleTheme();
     }

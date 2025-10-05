@@ -18,9 +18,9 @@
 
     // map size prop to Tailwind classes
     const sizeVariants:Record<NonNullable<Props['size']>, string> = {
-        sm: 'p-(--btn-sm) text-(--btn-text-sm)',
-        md: 'p-(--btn-md) text-(--btn-text-md)',
-        lg: 'p-(--btn-lg) text-(--btn-text-lg)',
+        sm: 'p-(--btn-sm)',
+        md: 'p-(--btn-md)',
+        lg: 'p-(--btn-lg)',
     };
 
     const sizeVarientsCopy:Record<NonNullable<Props['size']>, string> = {

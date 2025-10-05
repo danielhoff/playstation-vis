@@ -9,15 +9,17 @@
     import Button from '$lib/components/ui-library/Button.svelte';
     import { formatDate } from '$lib/utils/formatDate';
 
+    // following runs once on page load, we then don't need to run again, even on redrawing the chart.
     const boundaries:BoundariesFormatted = boundariesFormatted();
-
     let colors:Colors;
 
+    // generates all the points needed for the graph
     let points = generatePoints(metricsData, boundaries);
 
+    // creates the description(process) and timerange fitlers
     createDynamicFilters();
 
-    // groups the points into lines: label is - (metric.component-metric.group)
+    // groups the points into lines: label is - (metric.component-metric.groupId)
     let groupedPoints = d3.rollup(points, value => value, d => d.label);
     let groupedPointsFlat:Point[] = $state(flattenGroupedPoints(groupedPoints));
 
@@ -36,6 +38,7 @@
     });
 
     const redrawChart = () => {
+        // remove all children from <svg> and remove events, then redraw the chart.
         d3.selectAll('#line-chart *').remove();
         d3.select('#line-chart')
             .on('mousemove', null)
@@ -52,8 +55,9 @@
     });
 
     const drawChart = () => {
-        const container = d3.select('#chart-container').node() as HTMLElement;
         // where the magic happens, main function to trigger the drawing of the chart
+
+        const container = d3.select('#chart-container').node() as HTMLElement;
         const width:number = getContainerWidth(container);
         const height:number = getContainerHeight(container);
         const marginTop:number = 20;
@@ -61,16 +65,16 @@
         const marginBottom:number = 30;
         const marginLeft:number = 100;
 
+        // x values - if timefilter is active then use that range rather than full dataset
         const x:d3.ScaleTime<number, number> = d3.scaleUtc()
             .domain(
                 timeFilterValue && timeFilterActive() ? (timeFilterValue as [Date, Date])
                 : d3.extent(boundaries) as [Date, Date])
             .range([marginLeft, width - marginRight]);
 
-        // needs the extra check to failsafe to a number
+        // needs the extra check to failsafe to a number 
         const yMax:number = d3.max(
-            Array.from(groupedPoints.values()).flat().map(p => p.value))
-            ?? 0;
+            groupedPointsFlat.map(p => p.value)) ?? 0;
 
         const y:d3.ScaleLinear<number, number> = d3.scaleLinear()
             .domain([0, yMax])
@@ -89,6 +93,7 @@
 
     const drawSVG = (width:number, height:number, x:d3.ScaleTime<number, number>, y:d3.ScaleLinear<number, number>) => {
         
+        // used for the mouse move event, better performance than checking X,Y values manually
         const delaunay = d3.Delaunay.from(
             groupedPointsFlat,
             p => x(p.boundary),
@@ -238,11 +243,13 @@
     }
 
     const filterChart = () => {
+        // we first filter the points by the timerange selected(if there is one)
         let filteredPoints:Point[] = points;
         if (timeFilterActive()) {
             filteredPoints = filterPointsTime(filteredPoints);
         }
 
+        // rollup the (potentially) filtered point, then filter them but the other filter values and make the flattened version also
         groupedPoints =  d3.rollup(filteredPoints, value => value, d => d.label);
         groupedPoints = filteredGroupedPoints(groupedPoints);
         groupedPointsFlat = flattenGroupedPoints(groupedPoints);

@@ -21,9 +21,8 @@
         // multiselect plugin turns value from a Data object to a string - will turn in back here: 
         const dateValues: Date[] = value.map(v => new Date(v));
 
-
+        // Pass onTimeFilterChange to change the filter value. Then call the filterchange to execute.
         onTimeFilterChange(dateValues);
-        // pass on filter change to refilter (eg user cancels one time value);
         onFilterChange();
     }
 </script>
@@ -53,14 +52,14 @@
 
 <div class="flex mt-(--space-sm) gap-5">
     <div class="w-1/2">
-        <p><span>Description (Process):</span></p>
-        
-        <Filter onChangeEvent={(value) => updateFilters(value as string[], 'processDescription')} options={processDescriptionFilter}></Filter>
-    </div>
-    
-    <div class="w-1/2">
         <p><span>Description (Global):</span></p>
         
         <Filter onChangeEvent={(value) => updateFilters(value as GlobalDescription[], 'description')} options={descriptionFilter}></Filter>
+    </div>
+    
+    <div class="w-1/2">
+        <p><span>Description (Process):</span></p>
+        
+        <Filter onChangeEvent={(value) => updateFilters(value as string[], 'processDescription')} options={processDescriptionFilter}></Filter>
     </div>
 </div>

@@ -8,28 +8,28 @@ import type { Boundaries, Metric, Group, GroupsMap, BoundariesFormatted, Point, 
 
 // makes all 3 possible to grab the data like metricsData[0] rather than metricsData.metrics[0]
 export const boundariesData = $state<Boundaries>(boundariesJson.boundaries);
-
 export const metricsData = $state<Metric[]>(
   (metricsJson as { metrics: Metric[] }).metrics
 );
-
 export const groupsData = $state<Group[]>(
   (groupsJson as { groups: Group[] }).groups
 );
 
-export const groupsMap:GroupsMap = new SvelteMap(
-  groupsData.map(g => [g.id, g] as const)
-);
-
+// formatted boundaries (d3 friendly)
 export const boundariesFormatted = ():BoundariesFormatted => {
   return convertBoundariesFormatted();
 }
 
-export const processDescriptions = $state<string[]>([]);
+// group map for performance saving look ups.
+export const groupsMap:GroupsMap = new SvelteMap(
+  groupsData.map(g => [g.id, g] as const)
+);
 
 export const flattenGroupedPoints = (groupedPoints:Map<string, Point[]>): Point[]  => {
   return Array.from(groupedPoints.values()).flat();
 }
+
+export const processDescriptions = $state<string[]>([]);
 
 // light theme
 export const colorsLight:Colors = {
@@ -47,7 +47,8 @@ export const colorsDark:Colors = {
   process: 'oklch(82.448% 0.10005 348.83)',
 }
 
-// returns an array of points to map to the chart
+// returns an array of points to map to the chart, ready to be grouped into lines
+// this only runs once on page load. It's expensive but once ran, we can redraw the chart without having to call this again
 export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] => {
     const points: Point[] = [];
 
@@ -56,6 +57,7 @@ export const generatePoints = (metrics: Metric[], boundaries: Date[]): Point[] =
         const { start, end, component, group, data} = metric;
         const relatedGroup = groupsMap.get(group);
 
+        // here we create the array of process descriptions used for the filter
         if (relatedGroup?.kind === 'process') {
           if (!processDescriptions.includes(relatedGroup.description)) {
             processDescriptions.push(relatedGroup.description);
@@ -88,7 +90,6 @@ export const getLineColor = (point: Point, colors: Colors) :OKLCHFormat => {
     }
 }
 
-// format the timestamps to data D3 can use
 const convertBoundariesFormatted = $derived(() => {
   return boundariesData.map((boundary) => julianToDate(boundary));
 });

@@ -42,24 +42,26 @@ export const processDescriptionFilter:Array<FilterOption> = [];
 
 export const filterPointsTime = (points:Point[]):Point[]|[] => {
   const timeFilter = $state.snapshot(timeFilterValue);
-  console.log('hi');
+
   return points.filter(
-    (p) => p.boundary >= timeFilter[0] && p.boundary <= timeFilter[1]
+    (point) => point.boundary >= timeFilter[0] && point.boundary <= timeFilter[1]
   );
 }
 
-// filters - cascading filtering 
+// filters - main filtering method
 export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :SvelteMap<string,Point[]> => {
     const currentFilters = $state.snapshot(filters);
 
     const filtered = Array.from(groupedPoints)
       // the label/key is first in the array here, but we don't need it for this
       .filter(([, points]) => {
+        // only need first point in a groupedPoint array as we can then check if the line should appear on not
         const firstPoint = points[0];
         const relatedGroup = groupsMap.get(firstPoint.groupId);
-        // this keeps TS happy
+        
         if (!relatedGroup) return false;
 
+        // loop over filters to check if there is a match - must satify every active filter
         return (Object.entries(currentFilters) as [keyof Filters, string[]][])
           .every(([key, filterValues]) => {
 
@@ -89,6 +91,7 @@ export const filteredGroupedPoints = (groupedPoints: Map<string, Point[]>) :Svel
     return new SvelteMap(filtered);
 }
 
+// sets the timerange filter values
 export const onTimeFilterChange = (value: Date[]) => {
   timeFilterValue.length = 0; 
   timeFilterValue.push(...value.sort((a, b) => a.getTime() - b.getTime()));
